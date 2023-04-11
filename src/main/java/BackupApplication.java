@@ -1,6 +1,11 @@
 public class BackupApplication {
 
-    public static void main(String[] args) {
-        System.out.println("Hallo, die Anwendung läuft jetzt noch besser");
+    public void generateLists() {
+
     }
+
+    public void compareFile() {
+
+    }
+
 }

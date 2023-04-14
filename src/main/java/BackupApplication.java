@@ -15,22 +15,23 @@ public class BackupApplication {
             return;
         }
         for (File file : sourceDirectory.listFiles()) {
-            File newTargetDirectory = new File(targetDirectory.toPath().resolve(Path.of(file.getName(),"")).toUri());
+            File newEntry = new File(targetDirectory.toPath().resolve(Path.of(file.getName(),"")).toUri());
             if (!file.isDirectory()) {
-                copySingleFile(file, newTargetDirectory);
+                copySingleFile(file, newEntry);
             } else {
                 if (!targetDirectory.isDirectory()){
-                    targetDirectory.delete();
+                    targetDirectory.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
+                                              //TODO existieren sollte, die den gleichen Namen hat
                 }
                 if (!targetDirectory.exists()) {
                     targetDirectory.mkdir();
                 }
-                newTargetDirectory.mkdir();
-                backup(file, newTargetDirectory);
+                newEntry.mkdir();
+                backup(file, newEntry);
             }
         }
-
     }
+
     private static void copySingleFile(File file, File destinationDirectory)  {
         try {
             if (!destinationDirectory.exists()) {

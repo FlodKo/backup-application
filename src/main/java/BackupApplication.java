@@ -1,25 +1,38 @@
-import java.io.File;
-import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
+import java.io.*;
+import java.security.NoSuchAlgorithmException;
 
 public class BackupApplication {
+    private File sourceFile;
+    private File targetFile;
 
-    public void generateLists() {
-
+    public BackupApplication(File sourceFile, File targetFile) {
+        this.sourceFile = sourceFile;
+        this.targetFile = targetFile;
     }
 
-    public void compareFile() {
-        // for test purposes
-        File file = new File("./.gitignore");
-        File file2 = new File("./README.md");
-        try {
-            System.out.println(FileUtil.compareFiles(file,file2));
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
 
+
+
+    public static void copySingleFile(File file, File destinationDirectory)  {
+        try {
+            if (!destinationDirectory.exists()) {
+                destinationDirectory.createNewFile();
+            }
+            if (!FileUtil.compareFiles(file, destinationDirectory)) {
+                InputStream in = new FileInputStream((file));
+                OutputStream out = new FileOutputStream(destinationDirectory);
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, length);
+                }
+            }
+        } catch (IOException e) {
+            destinationDirectory.delete();
+            System.out.println(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

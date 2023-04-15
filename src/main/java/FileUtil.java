@@ -11,9 +11,17 @@ public class FileUtil {
         return generateHash(a).equals(generateHash(b));
     }
 
-    private static BigInteger generateHash(File file) throws IOException, NoSuchAlgorithmException {
-        byte[] data = Files.readAllBytes(file.toPath());
-        byte[] hash = MessageDigest.getInstance("MD5").digest(data);
+    public static BigInteger generateHash(File file) {
+        byte[] hash = null;
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+            hash = MessageDigest.getInstance("MD5").digest(data);
+
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("Algorithm problems.");
+        } catch (IOException e) {
+            System.err.println("Hash generation not possible");
+        }
         return new BigInteger(1, hash);
     }
 

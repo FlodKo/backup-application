@@ -20,7 +20,10 @@ public class FileUtil {
         } catch (NoSuchAlgorithmException e) {
             System.err.println("Algorithm problems.");
         } catch (IOException e) {
+            System.out.println("sdfkjsödlkfölsdkfö");
             System.err.println("Hash generation not possible");
+            return null;
+
         }
         return new BigInteger(1, hash);
     }

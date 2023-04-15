@@ -64,9 +64,15 @@ public class BackupApplication {
 
     public void cleanUp (File destinationDirectory) {
         for (File file : destinationDirectory.listFiles()) {
-          if (isInArrayList(FileUtil.generateHash(file))) {
-              file.delete();
-          }
+            if (!file.isDirectory()) {
+                BigInteger hash = FileUtil.generateHash(file);
+                if (hash == null) {continue;}
+                if (isInArrayList(hash) && !isInDirectory(file, destinationDirectory)) {
+                    file.delete();
+                }
+            } else {
+                cleanUp(file);
+            }
         }
     }
 
@@ -78,6 +84,19 @@ public class BackupApplication {
         for (BigInteger b: getHashList()) {
             if (hash.equals(b)) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isInDirectory(File file, File directory) {
+        for (File f: directory.listFiles()) {
+            if (!f.isDirectory()) {
+                if (FileUtil.generateHash(f).equals(FileUtil.generateHash(file))) {
+                    return true;
+                }
+            } else {
+                isInDirectory(file, f);
             }
         }
         return false;

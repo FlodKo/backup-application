@@ -8,6 +8,7 @@ public class Main {
         UserInput userInput = new UserInput();
         BackupApplication backupApplication = new BackupApplication(new File("./src/main/java/Main.java"), new File("./"));
         backupApplication.backup(userInput.getSource(), userInput.getTarget());
+        backupApplication.cleanUp(userInput.getTarget());
         for (BigInteger b : backupApplication.getHashList()) {
             System.out.println(b);
         }

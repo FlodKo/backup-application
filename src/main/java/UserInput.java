@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.util.Scanner;
 
 public class UserInput {
@@ -28,7 +27,6 @@ public class UserInput {
             catch (FileNotFoundException e) {
                 System.out.println("The entered Path is faulty, try again:");
                 enteredFile = null;
-                continue;
             }
         }
         return enteredFile;

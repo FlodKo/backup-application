@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class BackupApplication {
     private File sourceFile;
     private File targetFile;
-    private ArrayList<BigInteger> hashList = new ArrayList<>();
+
 
     public BackupApplication(File sourceFile, File targetFile) {
         this.sourceFile = sourceFile;
@@ -36,14 +36,14 @@ public class BackupApplication {
         }
     }
 
-    private void copySingleFile(File file, File destinationDirectory)  {
+    private void copySingleFile(File file, File targetDirectory)  {
         try {
-            if (!destinationDirectory.exists()) {
-                destinationDirectory.createNewFile();
+            if (!targetDirectory.exists()) {
+                targetDirectory.createNewFile();
             }
-            if (!FileUtil.compareFiles(file, destinationDirectory)) {
+            if (!FileUtil.compareFiles(file, targetDirectory)) {
                 InputStream in = new FileInputStream((file));
-                OutputStream out = new FileOutputStream(destinationDirectory);
+                OutputStream out = new FileOutputStream(targetDirectory);
                 byte[] buffer = new byte[1024];
                 int length;
                 while ((length = in.read(buffer)) > 0) {
@@ -51,42 +51,47 @@ public class BackupApplication {
                 }
             }
         } catch (IOException e) {
-            destinationDirectory.delete();
+            targetDirectory.delete();
             System.out.println(e);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        BigInteger hash = FileUtil.generateHash(file);
-        if (hash != null) {
-            hashList.add(hash);
-        }
     }
 
-    public void cleanUp (File destinationDirectory) {
-        for (File file : destinationDirectory.listFiles()) {
-            if (!file.isDirectory()) {
-                BigInteger hash = FileUtil.generateHash(file);
-                if (hash == null) {continue;}
-                if (isInArrayList(hash) && !isInDirectory(file, destinationDirectory)) {
-                    file.delete();
+    /**
+     * this method cleans the target directory for the 'updated backup' mode. To achieve this, the method compares the
+     * target directory (after the backup) with the source Directory and deletes everything not found in source
+     * @param targetDirectory the target Directory
+     * @param sourceDirectory the source Directory
+     */
+    public void cleanUp (File sourceDirectory, File targetDirectory) {
+        File[] sourceDirectoryArray = sourceDirectory.listFiles();
+        File[] targetDirectoryArray = targetDirectory.listFiles();
+        if (sourceDirectoryArray.length < targetDirectoryArray.length) {
+            for (int i = 0; i < sourceDirectoryArray.length; i++) {
+                for (File file: targetDirectoryArray) {
+                    if (!file.getName().equals(sourceDirectoryArray[i].getName())) {
+                        file.delete();
+                    }
                 }
-            } else {
-                cleanUp(file);
+                if (targetDirectoryArray[i].isDirectory()) { // muss hier überprüft werden, ob sourceDirectoryArray[i] auch ein directory ist?
+                    for (File sourceFile: sourceDirectoryArray) {
+                        if (sourceFile.getName().equals(targetDirectoryArray[i].getName())) {
+                            cleanUp(sourceFile, targetDirectoryArray[i]);
+                        }
+                    }
+                }
             }
         }
-    }
-
-    public ArrayList<BigInteger> getHashList() {
-        return hashList;
-    }
-
-    private boolean isInArrayList(BigInteger hash) {
-        for (BigInteger b: getHashList()) {
-            if (hash.equals(b)) {
-                return true;
+        for (File targetFile:targetDirectoryArray) {
+            if (targetFile.isDirectory()) {
+                for (File sourceFile: sourceDirectoryArray) {
+                    if (sourceFile.getName().equals(targetFile.getName())) {
+                        cleanUp(sourceFile, targetFile);
+                    }
+                }
             }
         }
-        return false;
     }
 
     private boolean isInDirectory(File file, File directory) {
@@ -100,5 +105,13 @@ public class BackupApplication {
             }
         }
         return false;
+    }
+
+    public File getSourceFile() {
+        return sourceFile;
+    }
+
+    public File getTargetFile() {
+        return targetFile;
     }
 }

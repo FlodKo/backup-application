@@ -19,8 +19,8 @@ public class FileUtil {
 
         } catch (NoSuchAlgorithmException e) {
             System.err.println("Algorithm problems.");
+            return null;
         } catch (IOException e) {
-            System.out.println("sdfkjsödlkfölsdkfö");
             System.err.println("Hash generation not possible");
             return null;
 

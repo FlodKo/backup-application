@@ -1,21 +1,64 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.Path;
 
 public class UI {
     JFrame mainWindow;
+    Path sourcePath = null;
+    Path targetPath = null;
 
     public UI() {
         mainWindow = new JFrame("simple backup application");
         mainWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        JTextArea infoBox = new JTextArea();
-        infoBox.setSize(300, 200);
-        infoBox.setBounds(100,150, 300, 200);
+        JTextArea srcText = new JTextArea("chosen source Directory:");
+        srcText.setBounds(60, 75, 300, 100);
+        srcText.setEditable(false);
 
-        JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"please choose...","mode1", "mode2", "mode3"});
+        JTextArea targetText = new JTextArea("target Directory:");
+        targetText.setBounds(390, 75, 300, 100);
+        targetText.setEditable(false);
+
+
+        JButton chooseSourceDirectory = new JButton("Choose Source Directory");
+        chooseSourceDirectory.setBounds(100,30, 250,30);
+        chooseSourceDirectory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser source = new JFileChooser();
+                source.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int state = source.showOpenDialog(null);
+                if (state == JFileChooser.APPROVE_OPTION) {
+                    sourcePath = source.getSelectedFile().toPath();
+                    srcText.append("\n" + sourcePath);
+                }
+            }
+        });
+
+        JButton chooseTargetDirectory = new JButton("Choose Target Directory");
+        chooseTargetDirectory.setBounds(400,30, 250,30);
+        chooseTargetDirectory.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser target = new JFileChooser();
+                target.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                int state = target.showOpenDialog(null);
+                if (state == JFileChooser.APPROVE_OPTION) {
+                    targetPath = target.getSelectedFile().toPath();
+                    targetText.append("\n"+targetPath);
+                }
+            }
+        });
+
+        JTextArea infoBox = new JTextArea();
+        infoBox.setEditable(false);
+        infoBox.setSize(400, 200);
+        infoBox.setBounds(175,250, 400, 200);
+
+        JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode","mode1", "mode2", "mode3"});
         dropDownMenu.setSize(200,30);
-        dropDownMenu.setBounds(200,50, 200, 30);
+        dropDownMenu.setBounds(275,200, 200, 30);
         dropDownMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -30,7 +73,7 @@ public class UI {
         });
 
         JButton startBackup = new JButton("start backup");
-        startBackup.setBounds(100,400, 150, 30);
+        startBackup.setBounds(200,500, 150, 30);
         startBackup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -43,7 +86,7 @@ public class UI {
         });
 
         JButton cancel = new JButton("cancel");
-        cancel.setBounds(300,400, 150, 30);
+        cancel.setBounds(400,500, 150, 30);
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainWindow.dispose();
@@ -55,7 +98,11 @@ public class UI {
         mainWindow.add(cancel);
         mainWindow.add(dropDownMenu);
         mainWindow.add(infoBox);
-        mainWindow.setSize(500,600);
+        mainWindow.add(chooseSourceDirectory);
+        mainWindow.add(chooseTargetDirectory);
+        mainWindow.add(srcText);
+        mainWindow.add(targetText);
+        mainWindow.setSize(750,600);
         mainWindow.setLayout(null);
         mainWindow.setVisible(true);
 

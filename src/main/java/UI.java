@@ -5,23 +5,34 @@ import java.nio.file.Path;
 
 public class UI {
     JFrame mainWindow;
-    Path sourcePath = null;
-    Path targetPath = null;
+    private Path sourcePath = null;
+    private Path targetPath = null;
+
+    public Path getSourcePath() {
+        return sourcePath;
+    }
+
+    public Path getTargetPath() {
+        return targetPath;
+    }
 
     public UI() {
+        // the whole window
         mainWindow = new JFrame("simple backup application");
         mainWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
+        // the textarea below the button to choose the source directory. it will display the chosen one
         JTextArea srcText = new JTextArea("chosen source Directory:");
         srcText.setBounds(60, 75, 300, 100);
         srcText.setEditable(false);
 
+        // the textarea below the button to choose the target directory. it will display the chosen one
         JTextArea targetText = new JTextArea("target Directory:");
         targetText.setBounds(390, 75, 300, 100);
         targetText.setEditable(false);
 
-
-        JButton chooseSourceDirectory = new JButton("Choose Source Directory");
+        // button to choose the source directory
+        JButton chooseSourceDirectory = new JButton("Choose Source Directory"); // TODO: in dropdown menü ändern?
         chooseSourceDirectory.setBounds(100,30, 250,30);
         chooseSourceDirectory.addActionListener(new ActionListener() {
             @Override
@@ -36,6 +47,7 @@ public class UI {
             }
         });
 
+        // button to choose the target directory
         JButton chooseTargetDirectory = new JButton("Choose Target Directory");
         chooseTargetDirectory.setBounds(400,30, 250,30);
         chooseTargetDirectory.addActionListener(new ActionListener() {
@@ -51,12 +63,15 @@ public class UI {
             }
         });
 
+        // textArea which displays more info about the backup mode
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
         infoBox.setSize(400, 200);
         infoBox.setBounds(175,250, 400, 200);
 
-        JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode","mode1", "mode2", "mode3"});
+        // dropdown menu to choose the backup mode
+        JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode",
+                "new Backup", "consecutive Backup", "updated Backup"}); //TODO: standard ändern
         dropDownMenu.setSize(200,30);
         dropDownMenu.setBounds(275,200, 200, 30);
         dropDownMenu.addActionListener(new ActionListener() {
@@ -72,6 +87,7 @@ public class UI {
             }
         });
 
+        // button to start the backup. is currently not completely implemented
         JButton startBackup = new JButton("start backup");
         startBackup.setBounds(200,500, 150, 30);
         startBackup.addActionListener(new ActionListener() {
@@ -85,6 +101,7 @@ public class UI {
             }
         });
 
+        // button to close the window. also terminates the program
         JButton cancel = new JButton("cancel");
         cancel.setBounds(400,500, 150, 30);
         cancel.addActionListener(new ActionListener() {
@@ -105,6 +122,8 @@ public class UI {
         mainWindow.setSize(750,600);
         mainWindow.setLayout(null);
         mainWindow.setVisible(true);
+
+
 
     }
 

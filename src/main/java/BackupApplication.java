@@ -1,34 +1,50 @@
 import java.io.*;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class BackupApplication {
-    private File sourceFile;
-    private File targetFile;
+    private File sourceRootFile;
+    private File targetRootFile;
+
+    private BackupMode backupMode;
 
 
-    public BackupApplication(File sourceFile, File targetFile) {
-        this.sourceFile = sourceFile;
-        this.targetFile = targetFile;
-
+    public BackupApplication(File sourceRootFile, File targetRootFile) {
+        this.sourceRootFile = sourceRootFile;
+        this.targetRootFile = targetRootFile;
     }
-    public void backup (File sourceDirectory, File targetDirectory) {
-        if (sourceDirectory.listFiles().length == 0) {
+
+    public void consecutiveBackup() {
+        backup(this.sourceRootFile, this.targetRootFile);
+    }
+
+    public void newBackup() {
+        File backupDirectory = this.targetRootFile.toPath().resolve("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss"))).toFile();
+        backupDirectory.mkdir();
+        backup(this.sourceRootFile,backupDirectory);
+    }
+
+    public void updatedBackup() {
+        backup(this.sourceRootFile, this.targetRootFile);
+        cleanUp(this.sourceRootFile, this.targetRootFile);
+    }
+    public void backup (File sourceFile, File targetFile) {
+        if (sourceFile.listFiles().length == 0) {
             return;
         }
-        for (File file : sourceDirectory.listFiles()) {
-            File newEntry = new File(targetDirectory.toPath().resolve(Path.of(file.getName(),"")).toUri());
+        for (File file : sourceFile.listFiles()) {
+            File newEntry = new File(targetFile.toPath().resolve(Path.of(file.getName(),"")).toUri());
             if (!file.isDirectory()) {
                 copySingleFile(file, newEntry);
             } else {
-                if (!targetDirectory.isDirectory()){
-                    targetDirectory.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
+                if (!targetFile.isDirectory()){
+                    targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
                                               //TODO existieren sollte, die den gleichen Namen hat
                 }
-                if (!targetDirectory.exists()) {
-                    targetDirectory.mkdir();
+                if (!targetFile.exists()) {
+                    targetFile.mkdir();
                 }
                 newEntry.mkdir();
                 backup(file, newEntry);
@@ -107,11 +123,11 @@ public class BackupApplication {
         return false;
     }
 
-    public File getSourceFile() {
-        return sourceFile;
+    public File getSourceRootFile() {
+        return sourceRootFile;
     }
 
-    public File getTargetFile() {
-        return targetFile;
+    public File getTargetRootFile() {
+        return targetRootFile;
     }
 }

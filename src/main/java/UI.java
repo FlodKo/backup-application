@@ -5,8 +5,9 @@ import java.nio.file.Path;
 
 public class UI {
     JFrame mainWindow;
-    private Path sourcePath = null;
+    private Path sourcePath = null; // TODO: muss hier Datentyp File statt Path hin?
     private Path targetPath = null;
+    JProgressBar progressBar;
 
     public Path getSourcePath() {
         return sourcePath;
@@ -101,6 +102,12 @@ public class UI {
             }
         });
 
+        // progress bar
+        progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        progressBar.setBounds(225, 400, 300, 20);
+
         // button to start the backup. is currently not completely implemented
         JButton startBackup = new JButton("start backup");
         startBackup.setBounds(200,500, 150, 30);
@@ -108,10 +115,11 @@ public class UI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 switch (dropDownMenu.getSelectedIndex()) {
-                    case 1 -> System.out.println(1);//Methodenaufruf für Modus 1
-                    case 2 -> System.out.println(2); // Methodenaufruf für Modus 2
-                    case 3 -> System.out.println(3); // Methodenaufruf für Modus 3
+                    case 1 -> System.out.println(1); // TODO: Methodenaufruf für Modus 1
+                    case 2 -> System.out.println(2); // TODO: Methodenaufruf für Modus 2
+                    case 3 -> System.out.println(3); // TODO: Methodenaufruf für Modus 3
                 }
+                fill();
             }
         });
 
@@ -133,12 +141,30 @@ public class UI {
         mainWindow.add(chooseTargetDirectory);
         mainWindow.add(srcText);
         mainWindow.add(targetText);
+        mainWindow.add(progressBar);
         mainWindow.setSize(750,600);
         mainWindow.setLayout(null);
         mainWindow.setVisible(true);
 
 
 
+    }
+
+    /**
+     * fills progressBar, not yet implemented //
+     */
+    //TODO:
+    // Ideen für Implementierung:
+    // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
+    // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
+
+    public void fill() {
+        double i = 0;
+        boolean running = true;
+        while (/*running*/ i < 100) {
+            i += 0.000001;
+            progressBar.setValue((int) i);
+        }
     }
 
     public static void main(String[] args) {

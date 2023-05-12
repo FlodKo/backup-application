@@ -66,8 +66,7 @@ public class UI {
         // textArea which displays more info about the backup mode
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
-        infoBox.setSize(400, 200);
-        infoBox.setBounds(175,250, 400, 200);
+        infoBox.setBounds(175,250, 400, 110);
 
         // dropdown menu to choose the backup mode
         JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode",
@@ -79,9 +78,24 @@ public class UI {
             public void actionPerformed(ActionEvent e) {
                 String infoText = "";
                 switch (dropDownMenu.getSelectedIndex()) {
-                    case 1 -> infoText = "Modus 1 blabla bla.";
-                    case 2 -> infoText = "Modus 2 blablabla. \n dasd";
-                    case 3 -> infoText = "Modus 3 blabla";
+                    case 1 -> infoText = """
+                            New Backup:\s
+
+                            In this mode, a completely new backup of the source
+                            directory will be created in the target location.""";
+                    case 2 -> infoText = """
+                            Consecutive Backup:\s
+
+                            In consecutive mode, all of those files in the source
+                            directory, which don't exist in the target location
+                            or were changed since the last backup will be copied.""";
+                    case 3 -> infoText = """
+                            Updated Backup:
+                            
+                            In updated backup mode, additionally to copying
+                            non-existing and changed files to the target directory,
+                            all of the files not existing in the source directory
+                            anymore will be deleted in the target directory.""";
                 }
                 infoBox.setText(infoText);
             }

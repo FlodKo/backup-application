@@ -22,7 +22,7 @@ public class UI {
         srcText.setEditable(false);
 
         // the textarea below the button to choose the target directory. it will display the chosen one
-        JTextArea targetText = new JTextArea("target Directory:");
+        JTextArea targetText = new JTextArea("chosen target Directory:");
         targetText.setBounds(390, 75, 300, 100);
         targetText.setEditable(false);
 
@@ -35,7 +35,7 @@ public class UI {
             int state = source.showOpenDialog(null);
             if (state == JFileChooser.APPROVE_OPTION) {
                 sourcePath = source.getSelectedFile().toPath();
-                srcText.append("\n" + sourcePath);
+                srcText.append("\n" + printPath(sourcePath));
             }
         });
 
@@ -48,7 +48,7 @@ public class UI {
             int state = target.showOpenDialog(null);
             if (state == JFileChooser.APPROVE_OPTION) {
                 targetPath = target.getSelectedFile().toPath();
-                targetText.append("\n" + targetPath);
+                targetText.append("\n" + printPath(targetPath));
             }
         });
 
@@ -142,6 +142,27 @@ public class UI {
             i += 0.000001;
             progressBar.setValue((int) i);
         }
+    }
+
+    /**
+     * reformats the given path so it fits in the textBox
+     * @param path the given path
+     * @return the formatted String
+     */
+    public String printPath(Path path) {
+        String[] splitPath = path.toString().split("(?<=/)");
+        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder eachLine = new StringBuilder();
+        int i = 0;
+        while (i < splitPath.length) {
+            while (i < splitPath.length && (splitPath[i].length() > 45 || eachLine.length() + splitPath[i].length() < 45)){
+                eachLine.append(splitPath[i]);
+                i++;
+            }
+            stringBuilder.append(eachLine).append("\n");
+            eachLine.setLength(0);
+        }
+        return stringBuilder.toString();
     }
 
     public static void main(String[] args) {

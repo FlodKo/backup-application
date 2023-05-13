@@ -34,7 +34,7 @@ public class UI {
 
         // button to choose the source directory
         JButton chooseSourceDirectory = new JButton("Choose Source Directory"); // TODO: in dropdown menü ändern?
-        chooseSourceDirectory.setBounds(100,30, 250,30);
+        chooseSourceDirectory.setBounds(100, 30, 250, 30);
         chooseSourceDirectory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -50,7 +50,7 @@ public class UI {
 
         // button to choose the target directory
         JButton chooseTargetDirectory = new JButton("Choose Target Directory");
-        chooseTargetDirectory.setBounds(400,30, 250,30);
+        chooseTargetDirectory.setBounds(400, 30, 250, 30);
         chooseTargetDirectory.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -59,7 +59,7 @@ public class UI {
                 int state = target.showOpenDialog(null);
                 if (state == JFileChooser.APPROVE_OPTION) {
                     targetPath = target.getSelectedFile().toPath();
-                    targetText.append("\n"+targetPath);
+                    targetText.append("\n" + targetPath);
                 }
             }
         });
@@ -67,13 +67,13 @@ public class UI {
         // textArea which displays more info about the backup mode
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
-        infoBox.setBounds(175,250, 400, 110);
+        infoBox.setBounds(175, 250, 400, 110);
 
         // dropdown menu to choose the backup mode
         JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode",
                 "new Backup", "consecutive Backup", "updated Backup"}); //TODO: standard ändern
-        dropDownMenu.setSize(200,30);
-        dropDownMenu.setBounds(275,200, 200, 30);
+        dropDownMenu.setSize(200, 30);
+        dropDownMenu.setBounds(275, 200, 200, 30);
         dropDownMenu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,7 +92,7 @@ public class UI {
                             or were changed since the last backup will be copied.""";
                     case 3 -> infoText = """
                             Updated Backup:
-                            
+                                                        
                             In updated backup mode, additionally to copying
                             non-existing and changed files to the target directory,
                             all of the files not existing in the source directory
@@ -110,14 +110,15 @@ public class UI {
 
         // button to start the backup. is currently not completely implemented
         JButton startBackup = new JButton("start backup");
-        startBackup.setBounds(200,500, 150, 30);
+        startBackup.setBounds(200, 500, 150, 30);
         startBackup.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
                 switch (dropDownMenu.getSelectedIndex()) {
-                    case 1 -> System.out.println(1); // TODO: Methodenaufruf für Modus 1
-                    case 2 -> System.out.println(2); // TODO: Methodenaufruf für Modus 2
-                    case 3 -> System.out.println(3); // TODO: Methodenaufruf für Modus 3
+                    case 1 -> backupApplication.newBackup();
+                    case 2 -> backupApplication.consecutiveBackup();
+                    case 3 -> backupApplication.updatedBackup();
                 }
                 fill();
             }
@@ -125,7 +126,7 @@ public class UI {
 
         // button to close the window. also terminates the program
         JButton cancel = new JButton("cancel");
-        cancel.setBounds(400,500, 150, 30);
+        cancel.setBounds(400, 500, 150, 30);
         cancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainWindow.dispose();
@@ -142,10 +143,9 @@ public class UI {
         mainWindow.add(srcText);
         mainWindow.add(targetText);
         mainWindow.add(progressBar);
-        mainWindow.setSize(750,600);
+        mainWindow.setSize(750, 600);
         mainWindow.setLayout(null);
         mainWindow.setVisible(true);
-
 
 
     }

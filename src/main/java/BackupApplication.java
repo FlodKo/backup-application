@@ -16,20 +16,35 @@ public class BackupApplication {
         this.targetRootFile = targetRootFile;
     }
 
-    public void consecutiveBackup() {
-        backup(this.sourceRootFile, this.targetRootFile);
-    }
-
+    /**
+     * method for executing the 'newBackup' mode
+     */
     public void newBackup() {
         File backupDirectory = this.targetRootFile.toPath().resolve("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss"))).toFile();
         backupDirectory.mkdir();
         backup(this.sourceRootFile,backupDirectory);
     }
 
+    /**
+     * method for executing the 'consecutiveBackup' mode
+     */
+    public void consecutiveBackup() {
+        backup(this.sourceRootFile, this.targetRootFile);
+    }
+
+    /**
+     * method for executing the 'updatedBackup' mode
+     */
     public void updatedBackup() {
         backup(this.sourceRootFile, this.targetRootFile);
         cleanUp(this.sourceRootFile, this.targetRootFile);
     }
+
+    /**
+     * this method executes the basic backup. All the files will be copied using copySingleFile().
+     * @param sourceFile source Directory
+     * @param targetFile target Directory
+     */
     public void backup (File sourceFile, File targetFile) {
         if (sourceFile.listFiles().length == 0) {
             return;
@@ -52,6 +67,11 @@ public class BackupApplication {
         }
     }
 
+    /**
+     * this method copies a single file. If an identical file already exists in the targetDirectory, it will not be copied
+     * @param file th file to be copied
+     * @param targetDirectory the directory the files is copied to
+     */
     private void copySingleFile(File file, File targetDirectory)  {
         try {
             if (!targetDirectory.exists()) {

@@ -1,6 +1,4 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.nio.file.Path;
 
 public class UI {
@@ -9,14 +7,10 @@ public class UI {
     private Path targetPath = null;
     JProgressBar progressBar;
 
-    public Path getSourcePath() {
-        return sourcePath;
-    }
 
-    public Path getTargetPath() {
-        return targetPath;
-    }
-
+    /**
+     * builds the UI window
+     */
     public UI() {
         // the whole window
         mainWindow = new JFrame("simple backup application");
@@ -35,32 +29,26 @@ public class UI {
         // button to choose the source directory
         JButton chooseSourceDirectory = new JButton("Choose Source Directory"); // TODO: in dropdown menü ändern?
         chooseSourceDirectory.setBounds(100, 30, 250, 30);
-        chooseSourceDirectory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser source = new JFileChooser();
-                source.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int state = source.showOpenDialog(null);
-                if (state == JFileChooser.APPROVE_OPTION) {
-                    sourcePath = source.getSelectedFile().toPath();
-                    srcText.append("\n" + sourcePath);
-                }
+        chooseSourceDirectory.addActionListener(e -> {
+            JFileChooser source = new JFileChooser();
+            source.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int state = source.showOpenDialog(null);
+            if (state == JFileChooser.APPROVE_OPTION) {
+                sourcePath = source.getSelectedFile().toPath();
+                srcText.append("\n" + sourcePath);
             }
         });
 
         // button to choose the target directory
         JButton chooseTargetDirectory = new JButton("Choose Target Directory");
         chooseTargetDirectory.setBounds(400, 30, 250, 30);
-        chooseTargetDirectory.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser target = new JFileChooser();
-                target.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                int state = target.showOpenDialog(null);
-                if (state == JFileChooser.APPROVE_OPTION) {
-                    targetPath = target.getSelectedFile().toPath();
-                    targetText.append("\n" + targetPath);
-                }
+        chooseTargetDirectory.addActionListener(e -> {
+            JFileChooser target = new JFileChooser();
+            target.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int state = target.showOpenDialog(null);
+            if (state == JFileChooser.APPROVE_OPTION) {
+                targetPath = target.getSelectedFile().toPath();
+                targetText.append("\n" + targetPath);
             }
         });
 
@@ -74,32 +62,29 @@ public class UI {
                 "new Backup", "consecutive Backup", "updated Backup"}); //TODO: standard ändern
         dropDownMenu.setSize(200, 30);
         dropDownMenu.setBounds(275, 200, 200, 30);
-        dropDownMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String infoText = "";
-                switch (dropDownMenu.getSelectedIndex()) {
-                    case 1 -> infoText = """
-                            New Backup:\s
+        dropDownMenu.addActionListener(e -> {
+            String infoText = "";
+            switch (dropDownMenu.getSelectedIndex()) {
+                case 1 -> infoText = """
+                        New Backup:\s
 
-                            In this mode, a completely new backup of the source
-                            directory will be created in the target location.""";
-                    case 2 -> infoText = """
-                            Consecutive Backup:\s
+                        In this mode, a completely new backup of the source
+                        directory will be created in the target location.""";
+                case 2 -> infoText = """
+                        Consecutive Backup:\s
 
-                            In consecutive mode, all of those files in the source
-                            directory, which don't exist in the target location
-                            or were changed since the last backup will be copied.""";
-                    case 3 -> infoText = """
-                            Updated Backup:
-                                                        
-                            In updated backup mode, additionally to copying
-                            non-existing and changed files to the target directory,
-                            all of the files not existing in the source directory
-                            anymore will be deleted in the target directory.""";
-                }
-                infoBox.setText(infoText);
+                        In consecutive mode, all of those files in the source
+                        directory, which don't exist in the target location
+                        or were changed since the last backup will be copied.""";
+                case 3 -> infoText = """
+                        Updated Backup:
+                                                    
+                        In updated backup mode, additionally to copying
+                        non-existing and changed files to the target directory,
+                        all of the files not existing in the source directory
+                        anymore will be deleted in the target directory.""";
             }
+            infoBox.setText(infoText);
         });
 
         // progress bar
@@ -111,28 +96,20 @@ public class UI {
         // button to start the backup. is currently not completely implemented
         JButton startBackup = new JButton("start backup");
         startBackup.setBounds(200, 500, 150, 30);
-        startBackup.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
-                switch (dropDownMenu.getSelectedIndex()) {
-                    case 1 -> backupApplication.newBackup();
-                    case 2 -> backupApplication.consecutiveBackup();
-                    case 3 -> backupApplication.updatedBackup();
-                }
-                fill();
+        startBackup.addActionListener(e -> {
+            BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
+            switch (dropDownMenu.getSelectedIndex()) {
+                case 1 -> backupApplication.newBackup();
+                case 2 -> backupApplication.consecutiveBackup();
+                case 3 -> backupApplication.updatedBackup();
             }
+            fill();
         });
 
         // button to close the window. also terminates the program
         JButton cancel = new JButton("cancel");
         cancel.setBounds(400, 500, 150, 30);
-        cancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                mainWindow.dispose();
-
-            }
-        });
+        cancel.addActionListener(e -> mainWindow.dispose());
 
         mainWindow.add(startBackup);
         mainWindow.add(cancel);

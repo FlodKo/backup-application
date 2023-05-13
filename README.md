@@ -1,6 +1,19 @@
 # backup-application
 Backup Application in Java
 
+
+
+# To-Dos: (13.5.)
+- progressBar implementieren
+- iwie tracken, wann das backup fertig ist und reaktion auf dem Fenster zeigen
+- Main.java und UserInput.java können weg
+- Fehlervermeidung einbauen, z.B. wenn kein directory gewählt ist
+- die ganzen warnings in BackupApplication angucken
+- kann isInDirectory() (in BackupApplication) weg?
+
+
+
+
 # Was wir brauchen
 - BackupApplication
   - Ausgabe, was geändert wurde

@@ -10,6 +10,9 @@ Backup Application in Java
 - Fehlervermeidung einbauen, z.B. wenn kein directory gewählt ist
 - die ganzen warnings in BackupApplication angucken
 - kann isInDirectory() (in BackupApplication) weg?
+- Ui:
+  - Fehlervermeidung für wenn oben nichts ausgewählt ist -> Start button ausgrauen?
+  - alten Eintrag löschen, wenn ne neue file gewählt wird
 
 
 

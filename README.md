@@ -12,7 +12,7 @@ Backup Application in Java
 - kann isInDirectory() (in BackupApplication) weg?
 - Ui:
   - Fehlervermeidung für wenn oben nichts ausgewählt ist -> Start button ausgrauen? -> Done
-  - alten Eintrag löschen, wenn ne neue file gewählt wird -> done
+  - alten Eintrag löschen, wenn ne neue file gewählt wird -> done 
 
 
 

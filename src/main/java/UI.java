@@ -5,8 +5,24 @@ public class UI {
     JFrame mainWindow;
     private Path sourcePath = null; // TODO: muss hier Datentyp File statt Path hin?
     private Path targetPath = null;
-    JProgressBar progressBar;
 
+    JTextArea srcText;
+    JTextArea targetText;
+    JButton chooseSourceDirectory;
+    JButton chooseTargetDirectory;
+    JProgressBar progressBar;
+    JButton startBackup;
+    JTextArea infoBox;
+    JComboBox<String> dropDownMenu;
+    JButton cancel;
+    boolean sourceChosen = false;
+    boolean targetChosen = false;
+    boolean modeChosen = false;
+
+
+    private void createSRCText() {
+
+    }
 
     /**
      * builds the UI window
@@ -16,48 +32,67 @@ public class UI {
         mainWindow = new JFrame("simple backup application");
         mainWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        // the textarea below the button to choose the source directory. it will display the chosen one
-        JTextArea srcText = new JTextArea("chosen source Directory:");
-        srcText.setBounds(60, 75, 300, 100);
-        srcText.setEditable(false);
+        srcText = createDirectoryText("chosen source Directory:", 60);
 
         // the textarea below the button to choose the target directory. it will display the chosen one
-        JTextArea targetText = new JTextArea("chosen target Directory:");
-        targetText.setBounds(390, 75, 300, 100);
-        targetText.setEditable(false);
+        targetText = createDirectoryText("chosen target Directory:", 390);
 
         // button to choose the source directory
-        JButton chooseSourceDirectory = new JButton("Choose Source Directory"); // TODO: in dropdown menü ändern?
-        chooseSourceDirectory.setBounds(100, 30, 250, 30);
-        chooseSourceDirectory.addActionListener(e -> {
-            JFileChooser source = new JFileChooser();
-            source.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int state = source.showOpenDialog(null);
-            if (state == JFileChooser.APPROVE_OPTION) {
-                sourcePath = source.getSelectedFile().toPath();
-                srcText.append("\n" + printPath(sourcePath));
-            }
-        });
+        chooseSourceDirectory = createDirectoryChooseButton("Choose Source Directory", 100, srcText, "src");
 
         // button to choose the target directory
-        JButton chooseTargetDirectory = new JButton("Choose Target Directory");
-        chooseTargetDirectory.setBounds(400, 30, 250, 30);
-        chooseTargetDirectory.addActionListener(e -> {
-            JFileChooser target = new JFileChooser();
-            target.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int state = target.showOpenDialog(null);
-            if (state == JFileChooser.APPROVE_OPTION) {
-                targetPath = target.getSelectedFile().toPath();
-                targetText.append("\n" + printPath(targetPath));
-            }
-        });
+        chooseTargetDirectory = createDirectoryChooseButton("Choose Target Directory", 400, targetText, "target");
 
         // textArea which displays more info about the backup mode
-        JTextArea infoBox = new JTextArea();
-        infoBox.setEditable(false);
-        infoBox.setBounds(175, 250, 400, 110);
+        infoBox = createModeInfoBox();
+
+        // button to start the backup. is currently not completely implemented
+        startBackup = createStartButton();
 
         // dropdown menu to choose the backup mode
+        dropDownMenu = createDropDownMenu();
+
+        // progress bar
+        progressBar = createProgressBar();
+
+        cancel = createCancelButton();
+
+        createMainWindow();
+
+
+    }
+
+    private void createMainWindow() {
+        mainWindow.add(startBackup);
+        mainWindow.add(cancel);
+        mainWindow.add(dropDownMenu);
+        mainWindow.add(infoBox);
+        mainWindow.add(chooseSourceDirectory);
+        mainWindow.add(chooseTargetDirectory);
+        mainWindow.add(srcText);
+        mainWindow.add(targetText);
+        mainWindow.add(progressBar);
+        mainWindow.setSize(750, 600);
+        mainWindow.setLayout(null);
+        mainWindow.setVisible(true);
+    }
+
+    private JButton createCancelButton() {
+        JButton cancel = new JButton("cancel");
+        cancel.setBounds(400, 500, 150, 30);
+        cancel.addActionListener(e -> mainWindow.dispose());
+        return cancel;
+    }
+
+    private JProgressBar createProgressBar() {
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+        progressBar.setBounds(225, 400, 300, 20);
+        return progressBar;
+    }
+
+    private JComboBox<String> createDropDownMenu() {
         JComboBox<String> dropDownMenu = new JComboBox<>(new String[]{"choose Backup Mode",
                 "new Backup", "consecutive Backup", "updated Backup"}); //TODO: standard ändern
         dropDownMenu.setSize(200, 30);
@@ -65,6 +100,7 @@ public class UI {
         dropDownMenu.addActionListener(e -> {
             String infoText = "";
             switch (dropDownMenu.getSelectedIndex()) {
+                case 0 -> modeChosen = false;
                 case 1 -> infoText = """
                         New Backup:\s
 
@@ -84,18 +120,26 @@ public class UI {
                         all of the files not existing in the source directory
                         anymore will be deleted in the target directory.""";
             }
+            if (dropDownMenu.getSelectedIndex() != 0) {
+                modeChosen = true;
+            }
             infoBox.setText(infoText);
+            backupPossible();
         });
+        return dropDownMenu;
+    }
 
-        // progress bar
-        progressBar = new JProgressBar();
-        progressBar.setValue(0);
-        progressBar.setStringPainted(true);
-        progressBar.setBounds(225, 400, 300, 20);
+    private static JTextArea createModeInfoBox() {
+        JTextArea infoBox = new JTextArea();
+        infoBox.setEditable(false);
+        infoBox.setBounds(175, 250, 400, 110);
+        return infoBox;
+    }
 
-        // button to start the backup. is currently not completely implemented
+    private JButton createStartButton() {
         JButton startBackup = new JButton("start backup");
         startBackup.setBounds(200, 500, 150, 30);
+        startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
             BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
             switch (dropDownMenu.getSelectedIndex()) {
@@ -105,26 +149,46 @@ public class UI {
             }
             fill();
         });
+        return startBackup;
+    }
 
-        // button to close the window. also terminates the program
-        JButton cancel = new JButton("cancel");
-        cancel.setBounds(400, 500, 150, 30);
-        cancel.addActionListener(e -> mainWindow.dispose());
+    private JButton createDirectoryChooseButton(String buttonText, int xPosition, JTextArea srcText, String type) {
+        JButton chooseSourceDirectory = new JButton(buttonText); // TODO: in dropdown menü ändern?
+        chooseSourceDirectory.setBounds(xPosition, 30, 250, 30);
+        chooseSourceDirectory.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (type.equals("src")) {
+                srcText.setText("chosen source Directory:");
+            } else {
+                targetText.setText("chosen target Directory:");
+            }
+            int state = fileChooser.showOpenDialog(null);
+            if (state == JFileChooser.APPROVE_OPTION) {
+                srcText.append("\n" + printPath(fileChooser.getSelectedFile().toPath()));
+                if (type.equals("src")) {
+                    sourceChosen = true;
+                } else {
+                    targetChosen = true;
+                }
+            } else {
+                if (type.equals("src")) {
+                    sourceChosen = false;
+                } else {
+                    targetChosen = false;
+                }
+            }
+            backupPossible();
+        });
+        return chooseSourceDirectory;
+    }
 
-        mainWindow.add(startBackup);
-        mainWindow.add(cancel);
-        mainWindow.add(dropDownMenu);
-        mainWindow.add(infoBox);
-        mainWindow.add(chooseSourceDirectory);
-        mainWindow.add(chooseTargetDirectory);
-        mainWindow.add(srcText);
-        mainWindow.add(targetText);
-        mainWindow.add(progressBar);
-        mainWindow.setSize(750, 600);
-        mainWindow.setLayout(null);
-        mainWindow.setVisible(true);
-
-
+    private static JTextArea createDirectoryText(String text, int x) {
+        // the textarea below the button to choose the source directory. it will display the chosen one
+        JTextArea directoryText = new JTextArea(text);
+        directoryText.setBounds(x, 75, 300, 100);
+        directoryText.setEditable(false);
+        return directoryText;
     }
 
     /**
@@ -142,6 +206,10 @@ public class UI {
             i += 0.000001;
             progressBar.setValue((int) i);
         }
+    }
+
+    public void backupPossible() {
+        startBackup.setEnabled(modeChosen && targetChosen && sourceChosen);
     }
 
     /**

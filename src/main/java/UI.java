@@ -152,23 +152,25 @@ public class UI {
         return startBackup;
     }
 
-    private JButton createDirectoryChooseButton(String buttonText, int xPosition, JTextArea srcText, String type) {
+    private JButton createDirectoryChooseButton(String buttonText, int xPosition, JTextArea text, String type) {
         JButton chooseSourceDirectory = new JButton(buttonText); // TODO: in dropdown menü ändern?
         chooseSourceDirectory.setBounds(xPosition, 30, 250, 30);
         chooseSourceDirectory.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (type.equals("src")) {
-                srcText.setText("chosen source Directory:");
+                text.setText("chosen source Directory:");
             } else {
-                targetText.setText("chosen target Directory:");
+                text.setText("chosen target Directory:");
             }
             int state = fileChooser.showOpenDialog(null);
             if (state == JFileChooser.APPROVE_OPTION) {
-                srcText.append("\n" + printPath(fileChooser.getSelectedFile().toPath()));
+                text.append("\n" + printPath(fileChooser.getSelectedFile().toPath()));
                 if (type.equals("src")) {
+                    sourcePath = fileChooser.getSelectedFile().toPath();
                     sourceChosen = true;
                 } else {
+                    targetPath = fileChooser.getSelectedFile().toPath();
                     targetChosen = true;
                 }
             } else {

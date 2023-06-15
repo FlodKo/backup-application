@@ -6,13 +6,13 @@ Backup Application in Java
 # To-Dos: (13.5.)
 - progressBar implementieren
 - iwie tracken, wann das backup fertig ist und reaktion auf dem Fenster zeigen
-- Main.java und UserInput.java können weg
-- Fehlervermeidung einbauen, z.B. wenn kein directory gewählt ist
+- Main.java und UserInput.java können weg -> done
+- Fehlervermeidung einbauen, z.B. wenn kein directory gewählt ist -> done
 - die ganzen warnings in BackupApplication angucken
 - kann isInDirectory() (in BackupApplication) weg?
 - Ui:
-  - Fehlervermeidung für wenn oben nichts ausgewählt ist -> Start button ausgrauen?
-  - alten Eintrag löschen, wenn ne neue file gewählt wird
+  - Fehlervermeidung für wenn oben nichts ausgewählt ist -> Start button ausgrauen? -> Done
+  - alten Eintrag löschen, wenn ne neue file gewählt wird -> done
 
 
 

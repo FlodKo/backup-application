@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 public class ProgressBarThread extends Thread {
-    private JProgressBar progressBar;
+    private final JProgressBar progressBar;
     public ProgressBarThread(JProgressBar progressBar) {
         this.progressBar = progressBar;
     }

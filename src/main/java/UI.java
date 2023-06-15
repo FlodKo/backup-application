@@ -202,12 +202,9 @@ public class UI {
     // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
 
     public void fill() {
-        double i = 0;
-        boolean running = true;
-        while (/*running*/ i < 100) {
-            i += 0.000001;
-            progressBar.setValue((int) i);
-        }
+        ProgressBarThread progressBarThread = new ProgressBarThread(progressBar);
+        progressBarThread.start();
+
     }
 
     public void backupPossible() {

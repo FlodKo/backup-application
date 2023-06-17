@@ -89,7 +89,7 @@ public class UI {
     }
 
     private JComboBox<BackupMode> createDropDownMenu() {
-        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW,BackupMode.CONSECUTIVE, BackupMode.UPDATING));
+        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW, BackupMode.CONSECUTIVE, BackupMode.UPDATING));
 
         JComboBox<BackupMode> dropDownMenu = new JComboBox<>(v);
         dropDownMenu.setSize(200, 30);
@@ -139,9 +139,23 @@ public class UI {
             switch (this.backupMode) {
                 case NEW -> backupApplication.newBackup();
                 case CONSECUTIVE -> backupApplication.consecutiveBackup();
-                case UPDATING -> backupApplication.updatedBackup();
+                case UPDATING -> {
+                    int input = JOptionPane.showConfirmDialog(null,
+                            """
+                                    This will delete all files in the target directory,
+                                    that are not present in the source directory.
+                                                        
+                                    If you have any files in the target directory that 
+                                    should not be deleted, safe them somewhere else.
+                                                        
+                                    Are you sure you want to continue?
+                                    """);
+                    if (input == 0) {
+                        backupApplication.updatedBackup();
+                        fill();
+                    }
+                }
             }
-            fill();
         });
         return startBackup;
     }

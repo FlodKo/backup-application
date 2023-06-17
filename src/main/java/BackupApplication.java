@@ -1,8 +1,12 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class BackupApplication {
     private File sourceRootFile;
@@ -22,7 +26,7 @@ public class BackupApplication {
     public void newBackup() {
         File backupDirectory = this.targetRootFile.toPath().resolve("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss"))).toFile();
         backupDirectory.mkdir();
-        backup(this.sourceRootFile,backupDirectory);
+        backup(this.sourceRootFile, backupDirectory);
     }
 
     /**
@@ -42,21 +46,22 @@ public class BackupApplication {
 
     /**
      * this method executes the basic backup. All the files will be copied using copySingleFile().
+     *
      * @param sourceFile source Directory
      * @param targetFile target Directory
      */
-    public void backup (File sourceFile, File targetFile) {
+    public void backup(File sourceFile, File targetFile) {
         if (sourceFile.listFiles().length == 0) {
             return;
         }
         for (File file : sourceFile.listFiles()) {
-            File newEntry = new File(targetFile.toPath().resolve(Path.of(file.getName(),"")).toUri());
+            File newEntry = new File(targetFile.toPath().resolve(Path.of(file.getName(), "")).toUri());
             if (!file.isDirectory()) {
                 copySingleFile(file, newEntry);
             } else {
-                if (!targetFile.isDirectory()){
+                if (!targetFile.isDirectory()) {
                     targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
-                                              //TODO existieren sollte, die den gleichen Namen hat
+                    //TODO existieren sollte, die den gleichen Namen hat
                 }
                 if (!targetFile.exists()) {
                     targetFile.mkdir();
@@ -69,10 +74,11 @@ public class BackupApplication {
 
     /**
      * this method copies a single file. If an identical file already exists in the targetDirectory, it will not be copied
-     * @param file th file to be copied
+     *
+     * @param file            th file to be copied
      * @param targetDirectory the directory the files is copied to
      */
-    private void copySingleFile(File file, File targetDirectory)  {
+    private void copySingleFile(File file, File targetDirectory) {
         try {
             if (!targetDirectory.exists()) {
                 targetDirectory.createNewFile();
@@ -97,50 +103,21 @@ public class BackupApplication {
     /**
      * this method cleans the target directory for the 'updated backup' mode. To achieve this, the method compares the
      * target directory (after the backup) with the source Directory and deletes everything not found in source
+     *
      * @param targetDirectory the target Directory
      * @param sourceDirectory the source Directory
      */
-    public void cleanUp (File sourceDirectory, File targetDirectory) {
-        File[] sourceDirectoryArray = sourceDirectory.listFiles();
-        File[] targetDirectoryArray = targetDirectory.listFiles();
-        if (sourceDirectoryArray.length < targetDirectoryArray.length) {
-            for (int i = 0; i < sourceDirectoryArray.length; i++) {
-                for (File file: targetDirectoryArray) {
-                    if (!file.getName().equals(sourceDirectoryArray[i].getName())) {
-                        file.delete();
-                    }
-                }
-                if (targetDirectoryArray[i].isDirectory()) { // muss hier überprüft werden, ob sourceDirectoryArray[i] auch ein directory ist?
-                    for (File sourceFile: sourceDirectoryArray) {
-                        if (sourceFile.getName().equals(targetDirectoryArray[i].getName())) {
-                            cleanUp(sourceFile, targetDirectoryArray[i]);
-                        }
-                    }
-                }
-            }
-        }
-        for (File targetFile:targetDirectoryArray) {
-            if (targetFile.isDirectory()) {
-                for (File sourceFile: sourceDirectoryArray) {
-                    if (sourceFile.getName().equals(targetFile.getName())) {
-                        cleanUp(sourceFile, targetFile);
-                    }
-                }
-            }
-        }
-    }
+    public void cleanUp(File sourceDirectory, File targetDirectory) {
+        ArrayList<File> sourceDirectoryArray = new ArrayList<>(List.of(Objects.requireNonNull(sourceDirectory.listFiles())));
+        ArrayList<File> targetDirectoryArray = new ArrayList<>(List.of(Objects.requireNonNull(targetDirectory.listFiles())));
 
-    private boolean isInDirectory(File file, File directory) {
-        for (File f: directory.listFiles()) {
-            if (!f.isDirectory()) {
-                if (FileUtil.generateHash(f).equals(FileUtil.generateHash(file))) {
-                    return true;
+        if (sourceDirectoryArray.size() < targetDirectoryArray.size()) {
+            for (File file : targetDirectoryArray) {
+                if (!sourceDirectoryArray.contains(file)) {
+                    file.delete();
                 }
-            } else {
-                isInDirectory(file, f);
             }
         }
-        return false;
     }
 
     public File getSourceRootFile() {

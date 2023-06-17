@@ -179,9 +179,9 @@ public class UI {
                     this.targetPath = fileChooser.getSelectedFile().toPath();
                 }
             }
+            checkIfBackupPossible();
         });
 
-        checkIfBackupPossible();
         return button;
     }
 

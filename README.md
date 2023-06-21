@@ -14,6 +14,17 @@ Backup Application in Java
   - Fehlervermeidung für wenn oben nichts ausgewählt ist -> Start button ausgrauen? -> Done
   - alten Eintrag löschen, wenn ne neue file gewählt wird -> done 
 
+# To-Dos: (19.6.)
+- Pop-Up wenn Backup fertig
+- Schönheitssachen
+  - nachfragefenster nur ein nein button
+  - sachen im drop-down menü nicht capslock
+- Progressbar richtig implementieren
+- JavaDocs schreiben
+- Name für neues Backup wählen lassen?
+- Externe medien sachen → einfach weiterer Button mit /media/... als ausgangspunkt?
+- Main schreiben
+
 
 
 

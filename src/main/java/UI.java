@@ -136,6 +136,7 @@ public class UI {
         startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
             BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
+            //TODO: ist es klug, das erst hier zu initialisieren?
             switch (this.backupMode) {
                 case NEW -> backupApplication.newBackup();
                 case CONSECUTIVE -> backupApplication.consecutiveBackup();
@@ -150,7 +151,7 @@ public class UI {
                                                         
                                     Are you sure you want to continue?
                                     """);
-                    if (input == 0) {
+                    if (input == 0) {//TODO: Ich glaube das sollte nicht im switch drinnen stehen... also zumindest das fill()
                         backupApplication.updatedBackup();
                         fill();
                     }

@@ -1,12 +1,9 @@
 import java.io.*;
-import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class BackupApplication {
     private File sourceRootFile;
@@ -39,7 +36,7 @@ public class BackupApplication {
     /**
      * method for executing the 'updatedBackup' mode
      */
-    public void updatedBackup() {
+    public void updatedBackup()  {
         backup(this.sourceRootFile, this.targetRootFile);
         cleanUp(this.sourceRootFile, this.targetRootFile);
     }
@@ -107,17 +104,13 @@ public class BackupApplication {
      * @param targetDirectory the target Directory
      * @param sourceDirectory the source Directory
      */
-    public void cleanUp(File sourceDirectory, File targetDirectory) {
-        ArrayList<File> sourceDirectoryArray = new ArrayList<>(List.of(Objects.requireNonNull(sourceDirectory.listFiles())));
-        ArrayList<File> targetDirectoryArray = new ArrayList<>(List.of(Objects.requireNonNull(targetDirectory.listFiles())));
-
-        if (sourceDirectoryArray.size() < targetDirectoryArray.size()) {
-            for (File file : targetDirectoryArray) {
-                if (!sourceDirectoryArray.contains(file)) {
-                    file.delete();
-                }
-            }
+    public void cleanUp(File sourceDirectory, File targetDirectory){
+        try {
+            Files.walkFileTree(sourceDirectory.toPath(), new CleanupFileVisitor(sourceDirectory.toPath(), targetDirectory.toPath()));
+        } catch (Exception e) {
+            System.out.println(e);
         }
+
     }
 
     public File getSourceRootFile() {

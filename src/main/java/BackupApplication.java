@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -71,7 +70,7 @@ public class BackupApplication {
                 }
 
             } else {
-                progressSize += 4096;
+                progressSize += file.length();
                 if (!targetFile.isDirectory()) {
                     targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
                     //TODO existieren sollte, die den gleichen Namen hat

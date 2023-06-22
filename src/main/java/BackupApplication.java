@@ -1,6 +1,4 @@
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -13,7 +11,7 @@ import java.util.Objects;
 public class BackupApplication {
     private File sourceRootFile;
     private long sourceDirectorySize = 0;
-    private long progressSize = 0;
+    private long progressSize = 4096;
     private File targetRootFile;
 
     private BackupMode backupMode;

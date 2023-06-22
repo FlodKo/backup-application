@@ -200,6 +200,7 @@ public class UI {
     // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
     // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
     public void fill() {
+        progressBar.setValue(0);
         ProgressBarThread progressBarThread = new ProgressBarThread(progressBar, backUpApplication);
         progressBarThread.start();
 

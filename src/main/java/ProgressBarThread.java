@@ -11,7 +11,7 @@ public class ProgressBarThread extends Thread {
     public void run() {
         int progress = 0;
         while (progress <= 100) {
-            progress = (int) (backupApplication.getProgressSize()/backupApplication.getSourceDirectorySize());
+            progress = (int) (((double)backupApplication.getProgressSize()/(double) backupApplication.getSourceDirectorySize())*100);
             try {
                 int finalProgress = progress;
                 SwingUtilities.invokeAndWait(() -> progressBar.setValue(finalProgress));
@@ -20,24 +20,4 @@ public class ProgressBarThread extends Thread {
             }
         }
     }
-
-    /*
-    public void run() {
-        double i = 0;
-        while (i < 100) {
-            i += 5;
-            progressBar.setValue((int) i);
-            try {
-                double finalI = i;
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setValue((int) finalI);
-                    }
-                });
-            } catch (InterruptedException | InvocationTargetException e) {
-                System.err.println("Exception thrown while invoking progressBar.setValue().");
-            }
-        }
-    }*/
 }

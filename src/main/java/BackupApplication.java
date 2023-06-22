@@ -1,5 +1,7 @@
+import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
@@ -63,12 +65,13 @@ public class BackupApplication {
             if (!file.isDirectory()) {
                 copySingleFile(file, newEntry);
                 try {
-                progressSize += Files.size(file.toPath()); //TODO: ordner beachten
+                progressSize += Files.size(file.toPath());
                 } catch (IOException e) {
                     System.err.println("IOEException while trying to read the size of file.");
                 }
 
             } else {
+                progressSize += 4096;
                 if (!targetFile.isDirectory()) {
                     targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
                     //TODO existieren sollte, die den gleichen Namen hat

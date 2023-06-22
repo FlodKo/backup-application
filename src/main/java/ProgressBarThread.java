@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 
 public class ProgressBarThread extends Thread {
     private final JProgressBar progressBar;
@@ -7,18 +8,36 @@ public class ProgressBarThread extends Thread {
         this.progressBar = progressBar;
         this.backupApplication = backupApplication;
     }
-    /*public void run() {
+    public void run() {
         int progress = 0;
         while (progress <= 100) {
             progress = (int) (backupApplication.getProgressSize()/backupApplication.getSourceDirectorySize());
-            progressBar.setValue(progress);
+            try {
+                int finalProgress = progress;
+                SwingUtilities.invokeAndWait(() -> progressBar.setValue(finalProgress));
+            } catch (InterruptedException | InvocationTargetException e) {
+                System.err.println("Exception thrown while invoking progressBar.setValue().");
+            }
         }
-    }*/
+    }
+
+    /*
     public void run() {
         double i = 0;
         while (i < 100) {
             i += 5;
             progressBar.setValue((int) i);
+            try {
+                double finalI = i;
+                SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setValue((int) finalI);
+                    }
+                });
+            } catch (InterruptedException | InvocationTargetException e) {
+                System.err.println("Exception thrown while invoking progressBar.setValue().");
+            }
         }
-    }
+    }*/
 }

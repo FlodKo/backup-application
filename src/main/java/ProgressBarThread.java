@@ -3,7 +3,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class ProgressBarThread extends Thread {
     private final JProgressBar progressBar;
-    private BackupApplication backupApplication = null;
+    private final BackupApplication backupApplication;
     public ProgressBarThread(JProgressBar progressBar, BackupApplication backupApplication) {
         this.progressBar = progressBar;
         this.backupApplication = backupApplication;

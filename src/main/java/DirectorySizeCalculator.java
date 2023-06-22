@@ -15,6 +15,7 @@ public class DirectorySizeCalculator implements FileVisitor<Path> {
      * @return the total apparent size
      */
     public long calculateSize(Path directory, DirectorySizeCalculator directorySizeCalculator) {
+        directorySize = 0;
         try {
             Files.walkFileTree(directory, directorySizeCalculator);
         } catch (IOException e) {

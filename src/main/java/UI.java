@@ -133,6 +133,7 @@ public class UI {
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
+            backUpApplication.setProgressSize(4096);
             backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
                     (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
             fill();
@@ -200,7 +201,6 @@ public class UI {
     // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
     // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
     public void fill() {
-        progressBar.setValue(0);
         ProgressBarThread progressBarThread = new ProgressBarThread(progressBar, backUpApplication);
         progressBarThread.start();
 

@@ -9,8 +9,8 @@ public class ProgressBarThread extends Thread {
         this.backupApplication = backupApplication;
     }
     public void run() {
-        int progress = 0;
-        while (progress < 100) {
+        int progress;
+        do {
             progress = (int) (((double)backupApplication.getProgressSize()/(double) backupApplication.getSourceDirectorySize())*100);
             try {
                 if (progress > 98) {
@@ -23,5 +23,6 @@ public class ProgressBarThread extends Thread {
                 System.err.println("Exception thrown while invoking progressBar.setValue().");
             }
         }
+        while (progress < 100);
     }
 }

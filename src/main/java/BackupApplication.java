@@ -158,6 +158,10 @@ public class BackupApplication {
         return progressSize;
     }
 
+    public void setProgressSize(long progressSize) {
+        this.progressSize = progressSize;
+    }
+
     public DirectorySizeCalculator getDirectorySizeCalculator() {
         return directorySizeCalculator;
     }

@@ -137,6 +137,7 @@ public class UI {
         startBackup.addActionListener(e -> {
             BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
             //TODO: ist es klug, das erst hier zu initialisieren?
+            fill();
             switch (this.backupMode) {
                 case NEW -> backupApplication.newBackup();
                 case CONSECUTIVE -> backupApplication.consecutiveBackup();
@@ -146,14 +147,13 @@ public class UI {
                                     This will delete all files in the target directory,
                                     that are not present in the source directory.
                                                         
-                                    If you have any files in the target directory that 
+                                    If you have any files in the target directory that
                                     should not be deleted, safe them somewhere else.
                                                         
                                     Are you sure you want to continue?
                                     """);
-                    if (input == 0) {//TODO: Ich glaube das sollte nicht im switch drinnen stehen... also zumindest das fill()
+                    if (input == 0) {
                         backupApplication.updatedBackup();
-                        fill();
                     }
                 }
             }

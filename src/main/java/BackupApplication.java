@@ -11,17 +11,16 @@ import java.util.Objects;
 
 public class BackupApplication {
     private File sourceRootFile;
-    private static long sourceDirectorySize = 0;
-    private static long progressSize = 0;
+    private long sourceDirectorySize = 0;
+    private long progressSize = 0;
     private File targetRootFile;
 
     private BackupMode backupMode;
+    private DirectorySizeCalculator directorySizeCalculator = new DirectorySizeCalculator();
 
 
     public BackupApplication(File sourceRootFile, File targetRootFile) {
         this.sourceRootFile = sourceRootFile;
-        DirectorySizeCalculator directorySizeCalculator = new DirectorySizeCalculator();
-        sourceDirectorySize = directorySizeCalculator.calculateSize(sourceRootFile.toPath(), directorySizeCalculator);
         this.targetRootFile = targetRootFile;
     }
 
@@ -139,11 +138,27 @@ public class BackupApplication {
         return targetRootFile;
     }
 
-    public static long getSourceDirectorySize() {
+    public void setSourceRootFile(File sourceRootFile) {
+        this.sourceRootFile = sourceRootFile;
+    }
+
+    public void setTargetRootFile(File targetRootFile) {
+        this.targetRootFile = targetRootFile;
+    }
+
+    public long getSourceDirectorySize() {
         return sourceDirectorySize;
     }
 
-    public static long getProgressSize() {
+    public void setSourceDirectorySize(long sourceDirectorySize) {
+        this.sourceDirectorySize = sourceDirectorySize;
+    }
+
+    public long getProgressSize() {
         return progressSize;
+    }
+
+    public DirectorySizeCalculator getDirectorySizeCalculator() {
+        return directorySizeCalculator;
     }
 }

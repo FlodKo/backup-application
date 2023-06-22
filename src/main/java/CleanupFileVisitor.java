@@ -4,7 +4,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
 
 public class CleanupFileVisitor implements FileVisitor<Path> {
 
@@ -19,28 +18,34 @@ public class CleanupFileVisitor implements FileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-
+/*
         // get the relative file name from path "expected"
-        Path relativize = expected.toPath().relativize(dir);
+        Path relativize = sourceDirectory.relativize(dir);
         // construct the path for the counterpart file in "generated"
-        File otherDir = generated.toPath().resolve(relativize).toFile();
-        log.debug("=== preVisitDirectory === compare " + dir + " to " + otherDir);
-        assertEquals("Folders doesn't contain same file!?!?",
-                Arrays.toString(dir.toFile().list()),
-                Arrays.toString(otherDir.list()));
-        return result;
+        File otherDir = targetDirectory.resolve(relativize).toFile();
+        if (!(dir.toFile() == otherDir)){
+            otherDir.delete();
+        };
+        */
         return FileVisitResult.CONTINUE;
     }
+
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+
         Path relativize = sourceDirectory.relativize(file);
         Path fileInOther = targetDirectory.resolve(relativize);
 
-        if (file != fileInOther) {
+        if (fileInOther.compareTo(file) != 0) {
             fileInOther.toFile().delete();
         }
 
         return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        return null;
     }
 
     @Override

@@ -106,7 +106,7 @@ public class BackupApplication {
      */
     public void cleanUp(File sourceDirectory, File targetDirectory){
         try {
-            Files.walkFileTree(sourceDirectory.toPath(), new CleanupFileVisitor(sourceDirectory.toPath(), targetDirectory.toPath()));
+            Files.walkFileTree(targetDirectory.toPath(), new CleanupFileVisitor(sourceDirectory.toPath(), targetDirectory.toPath()));
         } catch (Exception e) {
             System.out.println(e);
         }

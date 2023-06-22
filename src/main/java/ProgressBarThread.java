@@ -7,20 +7,18 @@ public class ProgressBarThread extends Thread {
         this.progressBar = progressBar;
         this.backupApplication = backupApplication;
     }
-    public void run() {
+    /*public void run() {
         int progress = 0;
         while (progress <= 100) {
             progress = (int) (backupApplication.getProgressSize()/backupApplication.getSourceDirectorySize());
             progressBar.setValue(progress);
         }
-    }
-    /*public void run() {
+    }*/
+    public void run() {
         double i = 0;
-        boolean running = true;
-        while (/*running/ i < 100) {
+        while (i < 100) {
             i += 5;
             progressBar.setValue((int) i);
         }
-    }*/
-
+    }
 }

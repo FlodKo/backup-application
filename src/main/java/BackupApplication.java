@@ -63,7 +63,7 @@ public class BackupApplication {
             if (!file.isDirectory()) {
                 copySingleFile(file, newEntry);
                 try {
-                progressSize += Files.size(file.toPath());
+                progressSize += Files.size(file.toPath()); //TODO: ordner beachten
                 } catch (IOException e) {
                     System.err.println("IOEException while trying to read the size of file.");
                 }

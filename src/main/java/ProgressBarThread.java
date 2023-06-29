@@ -8,10 +8,15 @@ public class ProgressBarThread extends Thread {
         this.progressBar = progressBar;
         this.backupApplication = backupApplication;
     }
+
+    /**
+     * in this method is used to update UI.progressbar
+     */
     public void run() {
         int progress;
         do {
-            progress = (int) (((double)backupApplication.getProgressSize()/(double) backupApplication.getSourceDirectorySize())*100);
+            progress = (int) (((double)backupApplication.getProgressSize()/
+                    (double) backupApplication.getSourceDirectorySize())*100);
             try {
                 if (progress > 98) {
                     progress = 100;

@@ -8,6 +8,10 @@ import java.time.format.DateTimeFormatter;
 public class BackupApplication {
     private File sourceRootFile;
     private long sourceDirectorySize = 0;
+    /**
+     * progressSize is initialized at 4MB since the root directory's size is included in sourceDirectorySize, but not
+     * parsed in backup()
+     */
     private long progressSize = 4096;
     private File targetRootFile;
 
@@ -46,6 +50,7 @@ public class BackupApplication {
 
     /**
      * this method executes the basic backup. All the files will be copied using copySingleFile().
+     * In it, progressSize is updated
      *
      * @param sourceFile source Directory
      * @param targetFile target Directory
@@ -80,7 +85,8 @@ public class BackupApplication {
     }
 
     /**
-     * this method copies a single file. If an identical file already exists in the targetDirectory, it will not be copied
+     * this method copies a single file.
+     * If an identical file already exists in the targetDirectory, it will not be copied
      *
      * @param file            th file to be copied
      * @param targetDirectory the directory the files is copied to

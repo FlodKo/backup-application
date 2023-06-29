@@ -17,27 +17,23 @@ public class CleanupFileVisitor implements FileVisitor<Path> {
 
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-/*
-        // get the relative file name from path "expected"
-        Path relativize = sourceDirectory.relativize(dir);
-        // construct the path for the counterpart file in "generated"
-        File otherDir = targetDirectory.resolve(relativize).toFile();
-        if (!(dir.toFile() == otherDir)){
-            otherDir.delete();
-        };
-        */
+    public FileVisitResult preVisitDirectory(Path directoryPath, BasicFileAttributes attrs) {
+
+        Path relativize = targetDirectory.relativize(directoryPath);
+        Path fileInSource = sourceDirectory.resolve(relativize);
+        if (!fileInSource.toFile().exists()) {
+            FileUtil.deleteDirectory(directoryPath.toFile());
+        }
         return FileVisitResult.CONTINUE;
     }
 
     @Override
-    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+    public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs) {
 
-        Path relativize = sourceDirectory.relativize(file);
-        Path fileInOther = targetDirectory.resolve(relativize);
-
-        if (fileInOther.compareTo(file) != 0) {
-            fileInOther.toFile().delete();
+        Path relativize = targetDirectory.relativize(filePath);
+        Path fileInSource = sourceDirectory.resolve(relativize);
+        if (!fileInSource.toFile().exists()) {
+            filePath.toFile().delete();
         }
 
         return FileVisitResult.CONTINUE;
@@ -49,7 +45,12 @@ public class CleanupFileVisitor implements FileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
+    public FileVisitResult postVisitDirectory(Path dirPath, IOException exc) {
+        File directory = dirPath.toFile();
+        if (directory.isDirectory() && directory.listFiles() == null){
+            directory.delete();
+        }
+
         return FileVisitResult.CONTINUE;
     }
 }

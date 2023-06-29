@@ -1,13 +1,10 @@
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
 public class UI {
     JFrame mainWindow;
-    private Path sourcePath = null;
-    private Path targetPath = null;
 
     private BackupMode backupMode = BackupMode.NONE;
 
@@ -20,6 +17,7 @@ public class UI {
     JTextArea infoBox;
     JComboBox<BackupMode> dropDownMenu;
     JButton cancel;
+    BackupApplication backUpApplication = new BackupApplication(null, null);
 
     /**
      * builds the UI window
@@ -135,25 +133,26 @@ public class UI {
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
-            BackupApplication backupApplication = new BackupApplication(sourcePath.toFile(), targetPath.toFile());
-            //TODO: ist es klug, das erst hier zu initialisieren?
+            backUpApplication.setProgressSize(4096);
+            backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
+                    (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
+            fill();
             switch (this.backupMode) {
-                case NEW -> backupApplication.newBackup();
-                case CONSECUTIVE -> backupApplication.consecutiveBackup();
+                case NEW -> backUpApplication.newBackup();
+                case CONSECUTIVE -> backUpApplication.consecutiveBackup();
                 case UPDATING -> {
                     int input = JOptionPane.showConfirmDialog(null,
                             """
                                     This will delete all files in the target directory,
                                     that are not present in the source directory.
                                                         
-                                    If you have any files in the target directory that 
+                                    If you have any files in the target directory that
                                     should not be deleted, safe them somewhere else.
                                                         
                                     Are you sure you want to continue?
                                     """);
-                    if (input == 0) {//TODO: Ich glaube das sollte nicht im switch drinnen stehen... also zumindest das fill()
-                        backupApplication.updatedBackup();
-                        fill();
+                    if (input == 0) {
+                        backUpApplication.updatedBackup();
                     }
                 }
             }
@@ -174,10 +173,10 @@ public class UI {
 
                 if (directoryType.equals(DirectoryType.SOURCE)) {
                     this.sourceText.setText("Chosen source directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
-                    this.sourcePath = fileChooser.getSelectedFile().toPath();
+                    backUpApplication.setSourceRootFile(fileChooser.getSelectedFile());
                 } else {
                     this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
-                    this.targetPath = fileChooser.getSelectedFile().toPath();
+                    backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
                 }
             }
             checkIfBackupPossible();
@@ -202,13 +201,14 @@ public class UI {
     // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
     // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
     public void fill() {
-        ProgressBarThread progressBarThread = new ProgressBarThread(progressBar);
+        ProgressBarThread progressBarThread = new ProgressBarThread(progressBar, backUpApplication);
         progressBarThread.start();
 
     }
 
     public void checkIfBackupPossible() {
-        startBackup.setEnabled(this.backupMode != BackupMode.NONE && this.sourcePath != null && this.targetPath != null);
+        startBackup.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
+                && backUpApplication.getTargetRootFile() != null);
     }
 
     public static void main(String[] args) {

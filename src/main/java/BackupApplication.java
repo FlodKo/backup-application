@@ -7,9 +7,12 @@ import java.time.format.DateTimeFormatter;
 
 public class BackupApplication {
     private File sourceRootFile;
+    private long sourceDirectorySize = 0;
+    private long progressSize = 4096;
     private File targetRootFile;
 
     private BackupMode backupMode;
+    private DirectorySizeCalculator directorySizeCalculator = new DirectorySizeCalculator();
 
 
     public BackupApplication(File sourceRootFile, File targetRootFile) {
@@ -55,7 +58,14 @@ public class BackupApplication {
             File newEntry = new File(targetFile.toPath().resolve(Path.of(file.getName(), "")).toUri());
             if (!file.isDirectory()) {
                 copySingleFile(file, newEntry);
+                try {
+                progressSize += Files.size(file.toPath());
+                } catch (IOException e) {
+                    System.err.println("IOEException while trying to read the size of file.");
+                }
+
             } else {
+                progressSize += file.length();
                 if (!targetFile.isDirectory()) {
                     targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
                     //TODO existieren sollte, die den gleichen Namen hat
@@ -119,5 +129,33 @@ public class BackupApplication {
 
     public File getTargetRootFile() {
         return targetRootFile;
+    }
+
+    public void setSourceRootFile(File sourceRootFile) {
+        this.sourceRootFile = sourceRootFile;
+    }
+
+    public void setTargetRootFile(File targetRootFile) {
+        this.targetRootFile = targetRootFile;
+    }
+
+    public long getSourceDirectorySize() {
+        return sourceDirectorySize;
+    }
+
+    public void setSourceDirectorySize(long sourceDirectorySize) {
+        this.sourceDirectorySize = sourceDirectorySize;
+    }
+
+    public long getProgressSize() {
+        return progressSize;
+    }
+
+    public void setProgressSize(long progressSize) {
+        this.progressSize = progressSize;
+    }
+
+    public DirectorySizeCalculator getDirectorySizeCalculator() {
+        return directorySizeCalculator;
     }
 }

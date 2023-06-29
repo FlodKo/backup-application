@@ -24,6 +24,7 @@ Backup Application in Java
 - Name für neues Backup wählen lassen?
 - Externe medien sachen → einfach weiterer Button mit /media/... als ausgangspunkt?
 - Main schreiben
+- nochmal über die Progressbar gucken
 
 
 

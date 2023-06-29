@@ -19,12 +19,13 @@ Backup Application in Java
 - Schönheitssachen
   - nachfragefenster nur ein nein button
   - sachen im drop-down menü nicht capslock
-- Progressbar richtig implementieren
+- Progressbar richtig implementieren -> done
 - JavaDocs schreiben
 - Name für neues Backup wählen lassen?
 - Externe medien sachen → einfach weiterer Button mit /media/... als ausgangspunkt?
 - Main schreiben
 - nochmal über die Progressbar gucken
+- neue GUI mit JavaFX?
 
 
 

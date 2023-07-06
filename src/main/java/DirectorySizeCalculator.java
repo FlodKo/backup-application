@@ -24,20 +24,24 @@ public class DirectorySizeCalculator implements FileVisitor<Path> {
         }
         return directorySize;
     }
+
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         directorySize += dir.toFile().length();
         return FileVisitResult.CONTINUE;
     }
+
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
         directorySize += attrs.size();
         return FileVisitResult.CONTINUE;
     }
+
     @Override
     public FileVisitResult visitFileFailed(Path file, IOException exc) {
         return FileVisitResult.CONTINUE;
     }
+
     @Override
     public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
         return FileVisitResult.CONTINUE;

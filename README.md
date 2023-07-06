@@ -4,14 +4,14 @@ Backup Application in Java
 # To-dos: (5.7.)
 
 - Schönheitssachen
-  - Nachfrage Fenster nur ein nein button 
+  - Nachfrage Fenster nur ein nein button → done
   - sachen im drop-down menü nicht capslock
   - Name für neues Backup wählen lassen?
   - Pop-Up wenn Backup fertig
   - neue GUI mit JavaFX?
 
 - Programm fertig machen:
-  - progressBar debuggen
+  - progressBar debuggen -> sollte passen
   - Main schreiben
   - allgemein Error handling
     - fehlerhafte Dateinamen handlen

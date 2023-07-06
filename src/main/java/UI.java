@@ -148,12 +148,12 @@ public class UI implements Observer {
                 backUpApplication.setProgressSize(4096);
                 backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
                         (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-                //fill();
                 switch (ui.getBackupMode()) {
                     case NEW -> backUpApplication.newBackup();
                     case CONSECUTIVE -> backUpApplication.consecutiveBackup();
                     case UPDATING -> {
-                        int input = JOptionPane.showConfirmDialog(null,
+                        Object[] options = {"OK", "Cancel"};
+                        int input = JOptionPane.showOptionDialog(null,
                                 """
                                         This will delete all files in the target directory,
                                         that are not present in the source directory.
@@ -162,8 +162,10 @@ public class UI implements Observer {
                                         should not be deleted, safe them somewhere else.
                                                             
                                         Are you sure you want to continue?
-                                        """);
-                        if (input == 0) {
+                                        """, "Warning",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                null, options, options[0]);
+                        if (input == JOptionPane.YES_OPTION) {
                             backUpApplication.updatedBackup();
                         }
                     }

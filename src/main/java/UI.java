@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
@@ -137,44 +136,51 @@ public class UI implements Observer {
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
-            backUpApplication.setProgressSize(4096);
-            backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
-                    (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-            //fill();
-            switch (this.backupMode) {
-                case NEW -> backUpApplication.newBackup();
-                case CONSECUTIVE -> backUpApplication.consecutiveBackup();
-                case UPDATING -> {
-                    int input = JOptionPane.showConfirmDialog(null,
-                            """
-                                    This will delete all files in the target directory,
-                                    that are not present in the source directory.
-                                                        
-                                    If you have any files in the target directory that
-                                    should not be deleted, safe them somewhere else.
-                                                        
-                                    Are you sure you want to continue?
-                                    """);
-                    if (input == 0) {
-                        backUpApplication.updatedBackup();
-                    }
-                }
-            }
+            startThread(this);
         });
         return startBackup;
+    }
+
+    private void startThread(UI ui) {
+        SwingWorker swingWorker = new SwingWorker() {
+            @Override
+            protected Boolean doInBackground() {
+                backUpApplication.setProgressSize(4096);
+                backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
+                        (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
+                //fill();
+                switch (ui.getBackupMode()) {
+                    case NEW -> backUpApplication.newBackup();
+                    case CONSECUTIVE -> backUpApplication.consecutiveBackup();
+                    case UPDATING -> {
+                        int input = JOptionPane.showConfirmDialog(null,
+                                """
+                                        This will delete all files in the target directory,
+                                        that are not present in the source directory.
+                                                            
+                                        If you have any files in the target directory that
+                                        should not be deleted, safe them somewhere else.
+                                                            
+                                        Are you sure you want to continue?
+                                        """);
+                        if (input == 0) {
+                            backUpApplication.updatedBackup();
+                        }
+                    }
+                }
+                return true;
+            }
+        };
+        swingWorker.execute();
     }
 
     private JButton createDirectoryChooseButton(int xPosition, DirectoryType directoryType) {
         JButton button = new JButton(directoryType.equals(DirectoryType.SOURCE) ? "Choose source directory" : "Choose target directory");
         button.setBounds(xPosition, 30, 250, 30);
-
         button.addActionListener((e) -> {
-
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
             if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-
                 if (directoryType.equals(DirectoryType.SOURCE)) {
                     this.sourceText.setText("Chosen source directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
                     backUpApplication.setSourceRootFile(fileChooser.getSelectedFile());
@@ -197,19 +203,6 @@ public class UI implements Observer {
         return directoryText;
     }
 
-    /**
-     * fills progressBar, not yet implemented //
-     */
-    //TODO:
-    // Ideen für Implementierung:
-    // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
-    // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
-    /*public void fill() {
-        ProgressBarThread progressBarThread = new ProgressBarThread(progressBar, backUpApplication);
-        progressBarThread.start();
-
-    }*/
-
     public void checkIfBackupPossible() {
         startBackup.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
                 && backUpApplication.getTargetRootFile() != null);
@@ -224,5 +217,9 @@ public class UI implements Observer {
         int progress = (int) (((double)backupApplication.getProgressSize()/
                     (double) backupApplication.getSourceDirectorySize())*100);
         progressBar.setValue(progress);
+    }
+
+    public BackupMode getBackupMode() {
+        return backupMode;
     }
 }

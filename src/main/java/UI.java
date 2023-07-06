@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
@@ -6,17 +8,17 @@ import java.util.Vector;
 public class UI implements Observer {
     JFrame mainWindow;
 
-    private BackupMode backupMode = BackupMode.NONE;
+    private BackupMode backupMode = BackupMode.None;
 
     JTextArea sourceText;
     JTextArea targetText;
-    JButton startBackup;
+    JButton startBackupButton;
     JButton chooseSourceDirectory;
     JButton chooseTargetDirectory;
     JProgressBar progressBar;
-    JTextArea infoBox;
-    JComboBox<BackupMode> dropDownMenu;
-    JButton cancel;
+    JTextArea backModeInfoBox;
+    JComboBox<BackupMode> chooseBackupMode;
+    JButton cancelButton;
     BackupApplication backUpApplication = new BackupApplication(null, null);
 
 
@@ -24,48 +26,28 @@ public class UI implements Observer {
      * builds the UI window
      */
     public UI() {
-
         backUpApplication.setObserver(this);
-        // the whole window
         mainWindow = new JFrame("simple backup application");
         mainWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
         sourceText = createDirectoryText("Chosen source directory:", 60);
-
-        // the textarea below the button to choose the target directory. it will display the chosen one
         targetText = createDirectoryText("Chosen target directory:", 390);
-
-        // button to start the backup. is currently not completely implemented
-        startBackup = createStartButton();
-
-        // button to choose the source directory
+        startBackupButton = createStartButton();
         chooseSourceDirectory = createDirectoryChooseButton(100, DirectoryType.SOURCE);
-
-        // button to choose the target directory
         chooseTargetDirectory = createDirectoryChooseButton(400, DirectoryType.TARGET);
-
-        // textArea which displays more info about the backup mode
-        infoBox = createModeInfoBox();
-
-        // dropdown menu to choose the backup mode
-        dropDownMenu = createDropDownMenu();
-
-        // progress bar
+        backModeInfoBox = createModeInfoBox();
+        chooseBackupMode = createBackupModeMenu();
         progressBar = createProgressBar();
-
-        cancel = createCancelButton();
-
+        cancelButton = createCancelButton();
         createMainWindow();
-
     }
 
     private void createMainWindow() {
-        mainWindow.add(startBackup);
+        mainWindow.add(startBackupButton);
         mainWindow.add(chooseSourceDirectory);
         mainWindow.add(chooseTargetDirectory);
-        mainWindow.add(cancel);
-        mainWindow.add(dropDownMenu);
-        mainWindow.add(infoBox);
+        mainWindow.add(cancelButton);
+        mainWindow.add(chooseBackupMode);
+        mainWindow.add(backModeInfoBox);
         mainWindow.add(sourceText);
         mainWindow.add(targetText);
         mainWindow.add(progressBar);
@@ -75,7 +57,7 @@ public class UI implements Observer {
     }
 
     private JButton createCancelButton() {
-        JButton cancel = new JButton("cancel");
+        JButton cancel = new JButton("Cancel");
         cancel.setBounds(400, 500, 150, 30);
         cancel.addActionListener(e -> mainWindow.dispose());
         return cancel;
@@ -89,8 +71,8 @@ public class UI implements Observer {
         return progressBar;
     }
 
-    private JComboBox<BackupMode> createDropDownMenu() {
-        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW, BackupMode.CONSECUTIVE, BackupMode.UPDATING));
+    private JComboBox<BackupMode> createBackupModeMenu() {
+        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.None, BackupMode.New, BackupMode.Consecutive, BackupMode.Updating));
 
         JComboBox<BackupMode> dropDownMenu = new JComboBox<>(v);
         dropDownMenu.setSize(200, 30);
@@ -98,18 +80,21 @@ public class UI implements Observer {
         dropDownMenu.addActionListener(e -> {
             String infoText = "";
             switch ((BackupMode) Objects.requireNonNull(dropDownMenu.getSelectedItem())) {
-                case NEW -> infoText = """
+                case None -> infoText = """
+                        
+                        Choose a Backup mode for more information.""";
+                case New -> infoText = """
                         New Backup:\s
 
                         In this mode, a completely new backup of the source
                         directory will be created in the target location.""";
-                case CONSECUTIVE -> infoText = """
+                case Consecutive -> infoText = """
                         Consecutive Backup:\s
 
                         In consecutive mode, all of those files in the source
                         directory, which don't exist in the target location
                         or were changed since the last backup will be copied.""";
-                case UPDATING -> infoText = """
+                case Updating -> infoText = """
                         Updated Backup:
                                                     
                         In updated backup mode, additionally to copying
@@ -118,7 +103,7 @@ public class UI implements Observer {
                         anymore will be deleted in the target directory.""";
             }
             this.backupMode = (BackupMode) dropDownMenu.getSelectedItem();
-            infoBox.setText(infoText);
+            backModeInfoBox.setText(infoText);
             checkIfBackupPossible();
         });
         return dropDownMenu;
@@ -128,52 +113,32 @@ public class UI implements Observer {
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
         infoBox.setBounds(175, 250, 400, 110);
+        infoBox.setText("""
+                        
+                        Choose a Backup mode for more information.""");
         return infoBox;
     }
 
     private JButton createStartButton() {
-        JButton startBackup = new JButton("start backup");
+        JButton startBackup = new JButton("Start Backup");
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
         startBackup.addActionListener(e -> {
-            startThread(this);
+            backUpApplication.setProgressSize(4096);
+            backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
+                    (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
+            if (backupMode == BackupMode.New) {
+                String newDirectoryName = JOptionPane.showInputDialog(null,
+                        "Choose a name for the new backup directory",
+                        ("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm"))));
+                if (newDirectoryName != null) {
+                    startThread(this, newDirectoryName);
+                }
+            } else {
+                startThread(this, null);
+            }
         });
         return startBackup;
-    }
-
-    private void startThread(UI ui) {
-        SwingWorker swingWorker = new SwingWorker() {
-            @Override
-            protected Boolean doInBackground() {
-                backUpApplication.setProgressSize(4096);
-                backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
-                        (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-                switch (ui.getBackupMode()) {
-                    case NEW -> backUpApplication.newBackup();
-                    case CONSECUTIVE -> backUpApplication.consecutiveBackup();
-                    case UPDATING -> {
-                        Object[] options = {"OK", "Cancel"};
-                        int input = JOptionPane.showOptionDialog(null,
-                                """
-                                        This will delete all files in the target directory,
-                                        that are not present in the source directory.
-                                                            
-                                        If you have any files in the target directory that
-                                        should not be deleted, safe them somewhere else.
-                                                            
-                                        Are you sure you want to continue?
-                                        """, "Warning",
-                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                                null, options, options[0]);
-                        if (input == JOptionPane.YES_OPTION) {
-                            backUpApplication.updatedBackup();
-                        }
-                    }
-                }
-                return true;
-            }
-        };
-        swingWorker.execute();
     }
 
     private JButton createDirectoryChooseButton(int xPosition, DirectoryType directoryType) {
@@ -206,22 +171,57 @@ public class UI implements Observer {
     }
 
     public void checkIfBackupPossible() {
-        startBackup.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
+        startBackupButton.setEnabled(this.backupMode != BackupMode.None && backUpApplication.getSourceRootFile() != null
                 && backUpApplication.getTargetRootFile() != null);
     }
 
-    public static void main(String[] args) {
-        new UI();
+    private void startThread(UI ui, String newDirectoryName) {
+        SwingWorker swingWorker = new SwingWorker() {
+            @Override
+            protected Boolean doInBackground() {
+                switch (ui.getBackupMode()) {
+                    case New -> backUpApplication.newBackup(newDirectoryName);
+                    case Consecutive -> backUpApplication.consecutiveBackup();
+                    case Updating -> {
+                        Object[] options = {"OK", "Cancel"};
+                        int input = JOptionPane.showOptionDialog(null,
+                                """
+                                        This will delete all files in the target directory,
+                                        that are not present in the source directory.
+                                                            
+                                        If you have any files in the target directory that
+                                        should not be deleted, safe them somewhere else.
+                                                            
+                                        Are you sure you want to continue?
+                                        """, "Warning",
+                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                null, options, options[0]);
+                        if (input == JOptionPane.YES_OPTION) {
+                            backUpApplication.updatedBackup();
+                        }
+                    }
+                }
+                return true;
+            }
+        };
+        swingWorker.execute();
+        JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override
     public void update(BackupApplication backupApplication) {
         int progress = (int) (((double)backupApplication.getProgressSize()/
-                    (double) backupApplication.getSourceDirectorySize())*100);
+                (double) backupApplication.getSourceDirectorySize())*100);
         progressBar.setValue(progress);
     }
 
     public BackupMode getBackupMode() {
         return backupMode;
     }
+
+    public static void main(String[] args) {
+        new UI();
+    }
+
 }

@@ -1,6 +1,6 @@
 public enum BackupMode {
-    NONE,
-    CONSECUTIVE,
-    NEW,
-    UPDATING
+    None,
+    Consecutive,
+    New,
+    Updating
 }

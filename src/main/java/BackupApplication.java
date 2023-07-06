@@ -2,8 +2,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class BackupApplication extends Observable{
     private File sourceRootFile;
@@ -27,8 +25,8 @@ public class BackupApplication extends Observable{
     /**
      * method for executing the 'newBackup' mode
      */
-    public void newBackup() {
-        File backupDirectory = this.targetRootFile.toPath().resolve("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm-ss"))).toFile();
+    public void newBackup(String newDirectoryName) {
+        File backupDirectory = this.targetRootFile.toPath().resolve(newDirectoryName).toFile();
         backupDirectory.mkdir();
         backup(this.sourceRootFile, backupDirectory);
     }

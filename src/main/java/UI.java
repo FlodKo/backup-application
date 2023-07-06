@@ -1,9 +1,10 @@
 import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
 
-public class UI {
+public class UI implements Observer {
     JFrame mainWindow;
 
     private BackupMode backupMode = BackupMode.NONE;
@@ -19,10 +20,13 @@ public class UI {
     JButton cancel;
     BackupApplication backUpApplication = new BackupApplication(null, null);
 
+
     /**
      * builds the UI window
      */
     public UI() {
+
+        backUpApplication.setObserver(this);
         // the whole window
         mainWindow = new JFrame("simple backup application");
         mainWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -136,7 +140,7 @@ public class UI {
             backUpApplication.setProgressSize(4096);
             backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
                     (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-            fill();
+            //fill();
             switch (this.backupMode) {
                 case NEW -> backUpApplication.newBackup();
                 case CONSECUTIVE -> backUpApplication.consecutiveBackup();
@@ -200,11 +204,11 @@ public class UI {
     // Ideen für Implementierung:
     // - Prozentzahl an Anzahl von Dateien festmachen? An der Größe?
     // - Phasen des backups als String reinschreiben? Also Scanning..., Copying Files..., Deleting Files... ?
-    public void fill() {
+    /*public void fill() {
         ProgressBarThread progressBarThread = new ProgressBarThread(progressBar, backUpApplication);
         progressBarThread.start();
 
-    }
+    }*/
 
     public void checkIfBackupPossible() {
         startBackup.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
@@ -213,5 +217,12 @@ public class UI {
 
     public static void main(String[] args) {
         new UI();
+    }
+
+    @Override
+    public void update(BackupApplication backupApplication) {
+        int progress = (int) (((double)backupApplication.getProgressSize()/
+                    (double) backupApplication.getSourceDirectorySize())*100);
+        progressBar.setValue(progress);
     }
 }

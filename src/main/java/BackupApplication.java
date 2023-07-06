@@ -5,7 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class BackupApplication {
+public class BackupApplication extends Observable{
     private File sourceRootFile;
     private long sourceDirectorySize = 0;
     /**
@@ -65,12 +65,14 @@ public class BackupApplication {
                 copySingleFile(file, newEntry);
                 try {
                 progressSize += Files.size(file.toPath());
+                notifyObserver(this);
                 } catch (IOException e) {
                     System.err.println("IOEException while trying to read the size of file.");
                 }
 
             } else {
                 progressSize += file.length();
+                notifyObserver(this);
                 if (!targetFile.isDirectory()) {
                     targetFile.delete(); //TODO hier Umgang mit Fehler einbauen, wenn eine Datei im Zielordner
                     //TODO existieren sollte, die den gleichen Namen hat

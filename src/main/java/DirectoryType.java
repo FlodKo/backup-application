@@ -1,4 +1,5 @@
 public enum DirectoryType {
-    TARGET,
+    TARGET_EXTERNAL,
+    TARGET_INTERNAL,
     SOURCE
 }

@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.io.File;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -14,7 +15,8 @@ public class UI implements Observer {
     JTextArea targetText;
     JButton startBackupButton;
     JButton chooseSourceDirectory;
-    JButton chooseTargetDirectory;
+    JButton chooseExternalTargetDirectory;
+    JButton chooseLocalTargetDirectory;
     JProgressBar progressBar;
     JTextArea backModeInfoBox;
     JComboBox<BackupMode> chooseBackupMode;
@@ -32,8 +34,9 @@ public class UI implements Observer {
         sourceText = createDirectoryText("Chosen source directory:", 60);
         targetText = createDirectoryText("Chosen target directory:", 390);
         startBackupButton = createStartButton();
-        chooseSourceDirectory = createDirectoryChooseButton(100, DirectoryType.SOURCE);
-        chooseTargetDirectory = createDirectoryChooseButton(400, DirectoryType.TARGET);
+        chooseSourceDirectory = createDirectoryChooseButton(60, 30, DirectoryType.SOURCE);
+        chooseExternalTargetDirectory = createDirectoryChooseButton(390, 30, DirectoryType.TARGET_EXTERNAL);
+        chooseLocalTargetDirectory = createDirectoryChooseButton(390, 70, DirectoryType.TARGET_INTERNAL);
         backModeInfoBox = createModeInfoBox();
         chooseBackupMode = createBackupModeMenu();
         progressBar = createProgressBar();
@@ -44,7 +47,8 @@ public class UI implements Observer {
     private void createMainWindow() {
         mainWindow.add(startBackupButton);
         mainWindow.add(chooseSourceDirectory);
-        mainWindow.add(chooseTargetDirectory);
+        mainWindow.add(chooseLocalTargetDirectory);
+        mainWindow.add(chooseExternalTargetDirectory);
         mainWindow.add(cancelButton);
         mainWindow.add(chooseBackupMode);
         mainWindow.add(backModeInfoBox);
@@ -67,7 +71,7 @@ public class UI implements Observer {
         JProgressBar progressBar = new JProgressBar();
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
-        progressBar.setBounds(225, 400, 300, 20);
+        progressBar.setBounds(225, 440, 300, 20);
         return progressBar;
     }
 
@@ -76,12 +80,12 @@ public class UI implements Observer {
 
         JComboBox<BackupMode> dropDownMenu = new JComboBox<>(v);
         dropDownMenu.setSize(200, 30);
-        dropDownMenu.setBounds(275, 200, 200, 30);
+        dropDownMenu.setBounds(275, 260, 200, 30);
         dropDownMenu.addActionListener(e -> {
             String infoText = "";
             switch ((BackupMode) Objects.requireNonNull(dropDownMenu.getSelectedItem())) {
                 case None -> infoText = """
-                        
+                                                
                         Choose a Backup mode for more information.""";
                 case New -> infoText = """
                         New Backup:\s
@@ -112,10 +116,10 @@ public class UI implements Observer {
     private static JTextArea createModeInfoBox() {
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
-        infoBox.setBounds(175, 250, 400, 110);
+        infoBox.setBounds(175, 310, 400, 110);
         infoBox.setText("""
-                        
-                        Choose a Backup mode for more information.""");
+                                        
+                Choose a Backup mode for more information.""");
         return infoBox;
     }
 
@@ -141,16 +145,28 @@ public class UI implements Observer {
         return startBackup;
     }
 
-    private JButton createDirectoryChooseButton(int xPosition, DirectoryType directoryType) {
-        JButton button = new JButton(directoryType.equals(DirectoryType.SOURCE) ? "Choose source directory" : "Choose target directory");
-        button.setBounds(xPosition, 30, 250, 30);
+    private JButton createDirectoryChooseButton(int xPosition, int yPosition, DirectoryType directoryType) {
+        String buttonText = switch (directoryType) {
+            case SOURCE -> "Choose source directory";
+            case TARGET_EXTERNAL -> "Choose external target directory";
+            default -> "Choose interal target directory";
+        };
+        JButton button = new JButton(buttonText);
+        button.setBounds(xPosition, yPosition, 300, 30);
         button.addActionListener((e) -> {
-            JFileChooser fileChooser = new JFileChooser();
+            File file = null;
+            if (directoryType.equals(DirectoryType.TARGET_EXTERNAL)) {
+                file = new java.io.File("../../media");
+            }
+            JFileChooser fileChooser = new JFileChooser(file);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 if (directoryType.equals(DirectoryType.SOURCE)) {
                     this.sourceText.setText("Chosen source directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
                     backUpApplication.setSourceRootFile(fileChooser.getSelectedFile());
+                } else if (directoryType.equals(DirectoryType.TARGET_INTERNAL)) {
+                    this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
+                    backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
                 } else {
                     this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
                     backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
@@ -165,7 +181,7 @@ public class UI implements Observer {
     private static JTextArea createDirectoryText(String text, int x) {
         // the textarea below the button to choose the source directory. it will display the chosen one
         JTextArea directoryText = new JTextArea(text);
-        directoryText.setBounds(x, 75, 300, 100);
+        directoryText.setBounds(x, 130, 300, 100);
         directoryText.setEditable(false);
         return directoryText;
     }
@@ -211,8 +227,8 @@ public class UI implements Observer {
 
     @Override
     public void update(BackupApplication backupApplication) {
-        int progress = (int) (((double)backupApplication.getProgressSize()/
-                (double) backupApplication.getSourceDirectorySize())*100);
+        int progress = (int) (((double) backupApplication.getProgressSize() /
+                (double) backupApplication.getSourceDirectorySize()) * 100);
         progressBar.setValue(progress);
     }
 

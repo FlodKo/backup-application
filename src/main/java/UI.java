@@ -22,7 +22,7 @@ public class UI implements Observer {
     JComboBox<BackupMode> chooseBackupMode;
     JButton cancelButton;
     BackupApplication backUpApplication = new BackupApplication(null, null);
-    SwingWorker swingWorker;
+    SwingWorker backupProgressSwingWorker;
 
 
     /**
@@ -65,7 +65,9 @@ public class UI implements Observer {
         JButton cancel = new JButton("Cancel");
         cancel.setBounds(400, 500, 150, 30);
         cancel.addActionListener(e -> {
-            swingWorker.cancel(true);
+            if (backupProgressSwingWorker != null) {
+                backupProgressSwingWorker.cancel(true);
+            }
             mainWindow.dispose();
         });
         return cancel;
@@ -198,7 +200,7 @@ public class UI implements Observer {
     }
 
     private void startSwingWorkerThread(UI ui, String newDirectoryName) {
-         swingWorker = new SwingWorker() {
+         backupProgressSwingWorker = new SwingWorker() {
             @Override
             protected Boolean doInBackground() {
                 switch (ui.getBackupMode()) {
@@ -228,13 +230,13 @@ public class UI implements Observer {
 
             @Override
             protected void done() {
-                if (!swingWorker.isCancelled()) {
+                if (!backupProgressSwingWorker.isCancelled()) {
                     JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
                             JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         };
-        swingWorker.execute();
+        backupProgressSwingWorker.execute();
     }
 
     @Override

@@ -22,7 +22,9 @@ public class CleanupFileVisitor implements FileVisitor<Path> {
         Path relativize = targetDirectory.relativize(directoryPath);
         Path fileInSource = sourceDirectory.resolve(relativize);
         if (!fileInSource.toFile().exists()) {
+            System.out.print("Deleting " + directoryPath + "...");
             FileUtil.deleteDirectory(directoryPath.toFile());
+            System.out.println(" done.");
         }
         return FileVisitResult.CONTINUE;
     }
@@ -33,7 +35,9 @@ public class CleanupFileVisitor implements FileVisitor<Path> {
         Path relativize = targetDirectory.relativize(filePath);
         Path fileInSource = sourceDirectory.resolve(relativize);
         if (!fileInSource.toFile().exists()) {
+            System.out.print("Deleting " + filePath + "...");
             filePath.toFile().delete();
+            System.out.println(" done");
         }
 
         return FileVisitResult.CONTINUE;

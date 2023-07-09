@@ -97,6 +97,7 @@ public class BackupApplication extends Observable{
                 targetDirectory.createNewFile();
             }
             if (!FileUtil.compareFiles(file, targetDirectory)) {
+                System.out.print("Copying " + file.getPath() + "...");
                 InputStream in = new FileInputStream((file));
                 OutputStream out = new FileOutputStream(targetDirectory);
                 byte[] buffer = new byte[1024];
@@ -104,6 +105,7 @@ public class BackupApplication extends Observable{
                 while ((length = in.read(buffer)) > 0) {
                     out.write(buffer, 0, length);
                 }
+                System.out.println(" done.");
             }
         } catch (IOException e) {
             targetDirectory.delete();

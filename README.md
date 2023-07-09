@@ -15,7 +15,7 @@ Backup Application in Java
   - Main schreiben
   - allgemein Error handling
     - fehlerhafte Dateinamen handlen
-  - Externe medien sachen → einfach weiterer Button mit /media/... als ausgangspunkt?
+  - Externe medien sachen → einfach weiterer Button mit /media/... als ausgangspunkt? -> done
   - irgendwie tracken, wann das backup fertig ist und reaktion auf dem Fenster zeigen → done
   - die ganzen warnings in BackupApplication angucken
   - JavaDocs schreiben, wenn noch notwendig

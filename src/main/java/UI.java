@@ -156,7 +156,9 @@ public class UI implements Observer {
         button.addActionListener((e) -> {
             File file = null;
             if (directoryType.equals(DirectoryType.TARGET_EXTERNAL)) {
-                file = new java.io.File("../../media");
+                String userHome = System.getProperty("user.home");
+                file = new java.io.File(userHome + "/../../media");
+
             }
             JFileChooser fileChooser = new JFileChooser(file);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -173,6 +175,7 @@ public class UI implements Observer {
                 }
             }
             checkIfBackupPossible();
+            //if (cancelButton.)
         });
 
         return button;

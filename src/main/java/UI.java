@@ -22,6 +22,7 @@ public class UI implements Observer {
     JComboBox<BackupMode> chooseBackupMode;
     JButton cancelButton;
     BackupApplication backUpApplication = new BackupApplication(null, null);
+    SwingWorker swingWorker;
 
 
     /**
@@ -63,7 +64,10 @@ public class UI implements Observer {
     private JButton createCancelButton() {
         JButton cancel = new JButton("Cancel");
         cancel.setBounds(400, 500, 150, 30);
-        cancel.addActionListener(e -> mainWindow.dispose());
+        cancel.addActionListener(e -> {
+            swingWorker.cancel(true);
+            mainWindow.dispose();
+        });
         return cancel;
     }
 
@@ -136,10 +140,10 @@ public class UI implements Observer {
                         "Choose a name for the new backup directory",
                         ("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm"))));
                 if (newDirectoryName != null) {
-                    startThread(this, newDirectoryName);
+                    startSwingWorkerThread(this, newDirectoryName);
                 }
             } else {
-                startThread(this, null);
+                startSwingWorkerThread(this, null);
             }
         });
         return startBackup;
@@ -175,7 +179,6 @@ public class UI implements Observer {
                 }
             }
             checkIfBackupPossible();
-            //if (cancelButton.)
         });
 
         return button;
@@ -194,8 +197,8 @@ public class UI implements Observer {
                 && backUpApplication.getTargetRootFile() != null);
     }
 
-    private void startThread(UI ui, String newDirectoryName) {
-        SwingWorker swingWorker = new SwingWorker() {
+    private void startSwingWorkerThread(UI ui, String newDirectoryName) {
+         swingWorker = new SwingWorker() {
             @Override
             protected Boolean doInBackground() {
                 switch (ui.getBackupMode()) {
@@ -225,8 +228,10 @@ public class UI implements Observer {
 
             @Override
             protected void done() {
-                JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                if (!swingWorker.isCancelled()) {
+                    JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         };
         swingWorker.execute();

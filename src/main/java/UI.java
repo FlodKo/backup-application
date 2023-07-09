@@ -9,7 +9,7 @@ import java.util.Vector;
 public class UI implements Observer {
     JFrame mainWindow;
 
-    private BackupMode backupMode = BackupMode.None;
+    private BackupMode backupMode = BackupMode.NONE;
 
     JTextArea sourceText;
     JTextArea targetText;
@@ -82,7 +82,7 @@ public class UI implements Observer {
     }
 
     private JComboBox<BackupMode> createBackupModeMenu() {
-        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.None, BackupMode.New, BackupMode.Consecutive, BackupMode.Updating));
+        Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW, BackupMode.CONSECUTIVE, BackupMode.UPDATING));
 
         JComboBox<BackupMode> dropDownMenu = new JComboBox<>(v);
         dropDownMenu.setSize(200, 30);
@@ -90,21 +90,21 @@ public class UI implements Observer {
         dropDownMenu.addActionListener(e -> {
             String infoText = "";
             switch ((BackupMode) Objects.requireNonNull(dropDownMenu.getSelectedItem())) {
-                case None -> infoText = """
+                case NONE -> infoText = """
                                                 
                         Choose a Backup mode for more information.""";
-                case New -> infoText = """
+                case NEW -> infoText = """
                         New Backup:\s
 
                         In this mode, a completely new backup of the source
                         directory will be created in the target location.""";
-                case Consecutive -> infoText = """
+                case CONSECUTIVE -> infoText = """
                         Consecutive Backup:\s
 
                         In consecutive mode, all of those files in the source
                         directory, which don't exist in the target location
                         or were changed since the last backup will be copied.""";
-                case Updating -> infoText = """
+                case UPDATING -> infoText = """
                         Updated Backup:
                                                     
                         In updated backup mode, additionally to copying
@@ -137,7 +137,7 @@ public class UI implements Observer {
             backUpApplication.setProgressSize(4096);
             backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
                     (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-            if (backupMode == BackupMode.New) {
+            if (backupMode == BackupMode.NEW) {
                 String newDirectoryName = JOptionPane.showInputDialog(null,
                         "Choose a name for the new backup directory",
                         ("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm"))));
@@ -195,7 +195,7 @@ public class UI implements Observer {
     }
 
     public void checkIfBackupPossible() {
-        startBackupButton.setEnabled(this.backupMode != BackupMode.None && backUpApplication.getSourceRootFile() != null
+        startBackupButton.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
                 && backUpApplication.getTargetRootFile() != null);
     }
 
@@ -204,9 +204,9 @@ public class UI implements Observer {
             @Override
             protected Boolean doInBackground() {
                 switch (ui.getBackupMode()) {
-                    case New -> backUpApplication.newBackup(newDirectoryName);
-                    case Consecutive -> backUpApplication.consecutiveBackup();
-                    case Updating -> {
+                    case NEW -> backUpApplication.newBackup(newDirectoryName);
+                    case CONSECUTIVE -> backUpApplication.consecutiveBackup();
+                    case UPDATING -> {
                         Object[] options = {"OK", "Cancel"};
                         int input = JOptionPane.showOptionDialog(null,
                                 """

@@ -149,7 +149,7 @@ public class UI implements Observer {
         String buttonText = switch (directoryType) {
             case SOURCE -> "Choose source directory";
             case TARGET_EXTERNAL -> "Choose external target directory";
-            default -> "Choose interal target directory";
+            default -> "Choose internal target directory";
         };
         JButton button = new JButton(buttonText);
         button.setBounds(xPosition, yPosition, 300, 30);

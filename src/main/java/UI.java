@@ -219,10 +219,14 @@ public class UI implements Observer {
                 }
                 return true;
             }
+
+            @Override
+            protected void done() {
+                JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
         };
         swingWorker.execute();
-        JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override

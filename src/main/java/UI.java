@@ -133,6 +133,7 @@ public class UI implements Observer {
         JButton startBackup = new JButton("Start Backup");
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
+        startBackup.setToolTipText("Start the backup");
         startBackup.addActionListener(e -> {
             backUpApplication.setProgressSize(4096);
             backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize

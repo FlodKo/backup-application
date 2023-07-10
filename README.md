@@ -14,3 +14,4 @@ Backup Application in Java
   - JavaDocs schreiben, wenn noch notwendig
   - executable bauen
   - Testen
+  - Tooltips schreiben

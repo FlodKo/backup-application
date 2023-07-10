@@ -201,7 +201,7 @@ public class UI implements Observer {
     }
 
     private void startSwingWorkerThread(UI ui, String newDirectoryName) {
-         backupProgressSwingWorker = new SwingWorker() {
+         backupProgressSwingWorker = new SwingWorker<>() {
             @Override
             protected Boolean doInBackground() {
                 switch (ui.getBackupMode()) {

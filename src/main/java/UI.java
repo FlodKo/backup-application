@@ -95,7 +95,7 @@ public class UI implements Observer {
     /**
      * creates the Dropdown menu which is uses to choose a BackupMode. It uses updateBackupModeMenu() to update the
      * text written to UI.backModeInfoBox.
-     * @return the dropdown menu
+     * @return UI.backupModeMenu
      */
     private JComboBox<BackupMode> createBackupModeMenu() {
         Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW, BackupMode.CONSECUTIVE, BackupMode.UPDATING));

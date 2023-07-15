@@ -19,14 +19,14 @@ public class UI implements Observer {
     JButton chooseLocalTargetDirectory;
     JProgressBar progressBar;
     JTextArea backModeInfoBox;
-    JComboBox<BackupMode> chooseBackupMode;
+    JComboBox<BackupMode> backupModeMenu;
     JButton cancelButton;
     BackupApplication backUpApplication = new BackupApplication(null, null);
     SwingWorker backupProgressSwingWorker;
 
 
     /**
-     * builds the UI window
+     * builds the UI window.
      */
     public UI() {
         backUpApplication.setObserver(this);
@@ -39,19 +39,22 @@ public class UI implements Observer {
         chooseExternalTargetDirectory = createDirectoryChooseButton(390, 30, DirectoryType.TARGET_EXTERNAL);
         chooseLocalTargetDirectory = createDirectoryChooseButton(390, 70, DirectoryType.TARGET_INTERNAL);
         backModeInfoBox = createModeInfoBox();
-        chooseBackupMode = createBackupModeMenu();
+        backupModeMenu = createBackupModeMenu();
         progressBar = createProgressBar();
         cancelButton = createCancelButton();
         createMainWindow();
     }
 
+    /**
+     * creates the main window.
+     */
     private void createMainWindow() {
         mainWindow.add(startBackupButton);
         mainWindow.add(chooseSourceDirectory);
         mainWindow.add(chooseLocalTargetDirectory);
         mainWindow.add(chooseExternalTargetDirectory);
         mainWindow.add(cancelButton);
-        mainWindow.add(chooseBackupMode);
+        mainWindow.add(backupModeMenu);
         mainWindow.add(backModeInfoBox);
         mainWindow.add(sourceText);
         mainWindow.add(targetText);
@@ -61,6 +64,10 @@ public class UI implements Observer {
         mainWindow.setVisible(true);
     }
 
+    /**
+     * creates the 'cancel' button.
+     * @return UI.cancelButton
+     */
     private JButton createCancelButton() {
         JButton cancel = new JButton("Cancel");
         cancel.setBounds(400, 500, 150, 30);
@@ -73,6 +80,10 @@ public class UI implements Observer {
         return cancel;
     }
 
+    /**
+     * creates the progressBar.
+     * @return UI.progressBar
+     */
     private JProgressBar createProgressBar() {
         JProgressBar progressBar = new JProgressBar();
         progressBar.setValue(0);
@@ -81,6 +92,11 @@ public class UI implements Observer {
         return progressBar;
     }
 
+    /**
+     * creates the Dropdown menu which is uses to choose a BackupMode. It uses updateBackupModeMenu() to update the
+     * text written to UI.backModeInfoBox.
+     * @return the dropdown menu
+     */
     private JComboBox<BackupMode> createBackupModeMenu() {
         Vector<BackupMode> v = new Vector<>(List.of(BackupMode.NONE, BackupMode.NEW, BackupMode.CONSECUTIVE, BackupMode.UPDATING));
 
@@ -88,37 +104,49 @@ public class UI implements Observer {
         dropDownMenu.setSize(200, 30);
         dropDownMenu.setBounds(275, 260, 200, 30);
         dropDownMenu.addActionListener(e -> {
-            String infoText = "";
-            switch ((BackupMode) Objects.requireNonNull(dropDownMenu.getSelectedItem())) {
-                case NONE -> infoText = """
-                                                
-                        Choose a Backup mode for more information.""";
-                case NEW -> infoText = """
-                        New Backup:\s
-
-                        In this mode, a completely new backup of the source
-                        directory will be created in the target location.""";
-                case CONSECUTIVE -> infoText = """
-                        Consecutive Backup:\s
-
-                        In consecutive mode, all of those files in the source
-                        directory, which don't exist in the target location
-                        or were changed since the last backup will be copied.""";
-                case UPDATING -> infoText = """
-                        Updated Backup:
-                                                    
-                        In updated backup mode, additionally to copying
-                        non-existing and changed files to the target directory,
-                        all of the files not existing in the source directory
-                        anymore will be deleted in the target directory.""";
-            }
-            this.backupMode = (BackupMode) dropDownMenu.getSelectedItem();
-            backModeInfoBox.setText(infoText);
+            updateBackupModeMenu(dropDownMenu);
             checkIfBackupPossible();
         });
         return dropDownMenu;
     }
 
+    /**
+     * updates the text in UI.backModeInfoBox according to the input given to UI.backupModeMenu.
+     * @param dropDownMenu UI.backupModeMenu
+     */
+    private void updateBackupModeMenu(JComboBox<BackupMode> dropDownMenu) {
+        String infoText = "";
+        switch ((BackupMode) Objects.requireNonNull(dropDownMenu.getSelectedItem())) {
+            case NONE -> infoText = """
+                                            
+                    Choose a Backup mode for more information.""";
+            case NEW -> infoText = """
+                    New Backup:\s
+
+                    In this mode, a completely new backup of the source
+                    directory will be created in the target location.""";
+            case CONSECUTIVE -> infoText = """
+                    Consecutive Backup:\s
+
+                    In consecutive mode, all of those files in the source
+                    directory, which don't exist in the target location
+                    or were changed since the last backup will be copied.""";
+            case UPDATING -> infoText = """
+                    Updated Backup:
+                                                
+                    In updated backup mode, additionally to copying
+                    non-existing and changed files to the target directory,
+                    all of the files not existing in the source directory
+                    anymore will be deleted in the target directory.""";
+        }
+        this.backupMode = (BackupMode) dropDownMenu.getSelectedItem();
+        backModeInfoBox.setText(infoText);
+    }
+
+    /**
+     * creates the infoBox displaying context to the chosen BackupMode.
+     * @return UI.backModeInfoBox
+     */
     private static JTextArea createModeInfoBox() {
         JTextArea infoBox = new JTextArea();
         infoBox.setEditable(false);
@@ -129,82 +157,47 @@ public class UI implements Observer {
         return infoBox;
     }
 
+    /**
+     * creates the 'start' button. Calls startBackup().
+     * @return UI.startButton
+     */
     private JButton createStartButton() {
         JButton startBackup = new JButton("Start Backup");
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
         startBackup.setToolTipText("Start the backup");
-        startBackup.addActionListener(e -> {
-            backUpApplication.setProgressSize(4096);
-            backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
-                    (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
-            if (backupMode == BackupMode.NEW) {
-                String newDirectoryName = JOptionPane.showInputDialog(null,
-                        "Choose a name for the new backup directory",
-                        ("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm"))));
-                if (newDirectoryName != null) {
-                    startSwingWorkerThread(this, newDirectoryName);
-                }
-            } else {
-                startSwingWorkerThread(this, null);
-            }
-        });
+        startBackup.addActionListener(e -> startBackup());
         return startBackup;
     }
 
-    private JButton createDirectoryChooseButton(int xPosition, int yPosition, DirectoryType directoryType) {
-        String buttonText = switch (directoryType) {
-            case SOURCE -> "Choose source directory";
-            case TARGET_EXTERNAL -> "Choose external target directory";
-            default -> "Choose internal target directory";
-        };
-        JButton button = new JButton(buttonText);
-        button.setBounds(xPosition, yPosition, 300, 30);
-        button.addActionListener((e) -> {
-            File file = null;
-            if (directoryType.equals(DirectoryType.TARGET_EXTERNAL)) {
-                String userHome = System.getProperty("user.home");
-                file = new java.io.File(userHome + "/../../media");
-
+    /**
+     * method used for starting the Backup. Start the WorkerThread by calling startSwingWorkerThread().
+     */
+    private void startBackup() {
+        backUpApplication.setProgressSize(4096);
+        backUpApplication.setSourceDirectorySize(backUpApplication.getDirectorySizeCalculator().calculateSize
+                (backUpApplication.getSourceRootFile().toPath(), backUpApplication.getDirectorySizeCalculator()));
+        if (backupMode == BackupMode.NEW) {
+            String newDirectoryName = JOptionPane.showInputDialog(null,
+                    "Choose a name for the new backup directory",
+                    ("Backup" + ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-hh-mm"))));
+            if (newDirectoryName != null) {
+                startSwingWorkerThread(newDirectoryName);
             }
-            JFileChooser fileChooser = new JFileChooser(file);
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                if (directoryType.equals(DirectoryType.SOURCE)) {
-                    this.sourceText.setText("Chosen source directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
-                    backUpApplication.setSourceRootFile(fileChooser.getSelectedFile());
-                } else if (directoryType.equals(DirectoryType.TARGET_INTERNAL)) {
-                    this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
-                    backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
-                } else {
-                    this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
-                    backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
-                }
-            }
-            checkIfBackupPossible();
-        });
-
-        return button;
+        } else {
+            startSwingWorkerThread(null);
+        }
     }
 
-    private static JTextArea createDirectoryText(String text, int x) {
-        // the textarea below the button to choose the source directory. it will display the chosen one
-        JTextArea directoryText = new JTextArea(text);
-        directoryText.setBounds(x, 130, 300, 100);
-        directoryText.setEditable(false);
-        return directoryText;
-    }
-
-    public void checkIfBackupPossible() {
-        startBackupButton.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
-                && backUpApplication.getTargetRootFile() != null);
-    }
-
-    private void startSwingWorkerThread(UI ui, String newDirectoryName) {
-         backupProgressSwingWorker = new SwingWorker<>() {
+    /**
+     * starts a WorkerThread on which runs the backup.
+     * @param newDirectoryName the name of the new backup folder chosen by the user in case backUpMode is BackUpMode.NEW
+     */
+    private void startSwingWorkerThread(String newDirectoryName) {
+        backupProgressSwingWorker = new SwingWorker<>() {
             @Override
             protected Boolean doInBackground() {
-                switch (ui.getBackupMode()) {
+                switch (backupMode) {
                     case NEW -> backUpApplication.newBackup(newDirectoryName);
                     case CONSECUTIVE -> backUpApplication.consecutiveBackup();
                     case UPDATING -> {
@@ -240,15 +233,86 @@ public class UI implements Observer {
         backupProgressSwingWorker.execute();
     }
 
+    /**
+     * creates the DirectoryChooseButtons. Calls openFileChooser().
+     * @param xPosition vertical position
+     * @param yPosition horizontal position
+     * @param directoryType the directoryType is used to differentiate between the different DirectoryChooseButtons
+     * @return UI.chooseSourceDirectory, UI.chooseExternalTargetDirectory or UI.chooseLocalTargetDirectory
+     */
+    private JButton createDirectoryChooseButton(int xPosition, int yPosition, DirectoryType directoryType) {
+        String buttonText = switch (directoryType) {
+            case SOURCE -> "Choose source directory";
+            case TARGET_EXTERNAL -> "Choose external target directory";
+            default -> "Choose internal target directory";
+        };
+        JButton button = new JButton(buttonText);
+        button.setBounds(xPosition, yPosition, 300, 30);
+        button.addActionListener((e) -> {
+            openFileChooser(directoryType);
+            checkIfBackupPossible();
+        });
+
+        return button;
+    }
+
+    /**
+     * opens a JFileChooser in order to allow the user to choose source and target directories.
+     * @param directoryType the directoryType is used to differentiate between the different DirectoryChooseButtons
+     */
+    private void openFileChooser(DirectoryType directoryType) {
+        File file = null;
+        if (directoryType.equals(DirectoryType.TARGET_EXTERNAL)) {
+            String userHome = System.getProperty("user.home");
+            file = new File(userHome + "/../../media");
+
+        }
+        JFileChooser fileChooser = new JFileChooser(file);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            if (directoryType.equals(DirectoryType.SOURCE)) {
+                this.sourceText.setText("Chosen source directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
+                backUpApplication.setSourceRootFile(fileChooser.getSelectedFile());
+            } else if (directoryType.equals(DirectoryType.TARGET_INTERNAL)) {
+                this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
+                backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
+            } else {
+                this.targetText.setText("Chosen target directory:\n" + StringUtil.printPath(fileChooser.getSelectedFile().toPath()));
+                backUpApplication.setTargetRootFile(fileChooser.getSelectedFile());
+            }
+        }
+    }
+
+    /**
+     * creates the JTextAreas where the chosen directories get displayed.
+     * @param text the path of the chosen directory
+     * @param xPosition vertical position
+     * @return UI.sourceText or UI.targetText
+     */
+    private static JTextArea createDirectoryText(String text, int xPosition) {
+        JTextArea directoryText = new JTextArea(text);
+        directoryText.setBounds(xPosition, 130, 300, 100);
+        directoryText.setEditable(false);
+        return directoryText;
+    }
+
+    /**
+     * check whether a target directory, a source directory and a backup mode is chosen.
+     */
+    public void checkIfBackupPossible() {
+        startBackupButton.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null
+                && backUpApplication.getTargetRootFile() != null);
+    }
+
+    /**
+     * updates progressBar's value.
+     * @param backupApplication the instance of BackupApplication
+     */
     @Override
     public void update(BackupApplication backupApplication) {
         int progress = (int) (((double) backupApplication.getProgressSize() /
                 (double) backupApplication.getSourceDirectorySize()) * 100);
         progressBar.setValue(progress);
-    }
-
-    public BackupMode getBackupMode() {
-        return backupMode;
     }
 
     public static void main(String[] args) {

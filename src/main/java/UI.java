@@ -248,7 +248,7 @@ public class UI implements Observer {
 
         JButton button;
         if (directoryType == DirectoryType.TARGET_EXTERNAL) {
-            Path imagePath = Paths.get("./src/resources/usb-key.png").toAbsolutePath();
+            Path imagePath = Paths.get("./src/resources/icon").toAbsolutePath();
             ImageIcon usbStick = new ImageIcon(String.valueOf(imagePath));
             button = new JButton(usbStick);
             button.setToolTipText("choose external directory");

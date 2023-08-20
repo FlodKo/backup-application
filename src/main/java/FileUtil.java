@@ -23,7 +23,7 @@ public class FileUtil {
             System.err.println("Algorithm problems.");
             return null;
         } catch (IOException e) {
-            System.err.println("Hash generation not possible");
+            System.err.println("Hash generation not possible for file with name" + file.getName());
             return null;
 
         }

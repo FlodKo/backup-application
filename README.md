@@ -13,5 +13,5 @@ Backup Application in Java
   - die ganzen warnings in BackupApplication angucken (?)
   - executable bauen (?)
   - Testen (Alle)
-  - Tooltips schreiben
+  - Tooltips schreiben -> fertig
   - Windows Version schreiben? (?)

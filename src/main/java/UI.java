@@ -138,7 +138,7 @@ public class UI implements Observer {
 
                     In updated backup mode, additionally to copying
                     non-existing and changed files to the target directory,
-                    all of the files not existing in the source directory
+                    all of the files not existent in the source directory
                     anymore will be deleted in the target directory.""";
         };
         this.backupMode = (BackupMode) dropDownMenu.getSelectedItem();
@@ -167,7 +167,6 @@ public class UI implements Observer {
         JButton startBackup = new JButton("Start Backup");
         startBackup.setBounds(200, 500, 150, 30);
         startBackup.setEnabled(false);
-        startBackup.setToolTipText("Start the backup");
         startBackup.addActionListener(e -> startBackup());
         return startBackup;
     }
@@ -208,9 +207,9 @@ public class UI implements Observer {
                         int input = JOptionPane.showOptionDialog(null,
                                 """
                                         This will delete all files in the target directory,
-                                        that are not present in the source directory.
+                                        which are not present in the source directory.
 
-                                        If you have any files in the target directory that
+                                        If there are any files in the target directory which
                                         should not be deleted, safe them somewhere else.
 
                                         Are you sure you want to continue?

@@ -185,9 +185,34 @@ public class UI implements Observer {
             if (newDirectoryName != null) {
                 startSwingWorkerThread(newDirectoryName);
             }
+        } else if (backupMode == BackupMode.UPDATING) {
+            if (showUpdatingModeWarning()) {
+                startSwingWorkerThread(null);
+            }
         } else {
             startSwingWorkerThread(null);
         }
+    }
+
+    /**
+     * shows a warning dialog if the "update" mode is chosen
+     * @return Yes/No option
+     */
+    private boolean showUpdatingModeWarning() {
+        Object[] options = {"OK", "Cancel"};
+        int input = JOptionPane.showOptionDialog(null,
+                """
+                        This will delete all files in the target directory,
+                        which are not present in the source directory.
+
+                        If there are any files in the target directory which
+                        should not be deleted, safe them somewhere else.
+
+                        Are you sure you want to continue?
+                        """, "Warning",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                null, options, options[0]);
+        return input == JOptionPane.YES_OPTION;
     }
 
     /**
@@ -199,27 +224,11 @@ public class UI implements Observer {
         backupProgressSwingWorker = new SwingWorker<>() {
             @Override
             protected Boolean doInBackground() {
+                System.out.print("starting backup in " + backupMode + " mode.");
                 switch (backupMode) {
                     case NEW -> backUpApplication.newBackup(newDirectoryName);
                     case CONSECUTIVE -> backUpApplication.consecutiveBackup();
-                    case UPDATING -> {
-                        Object[] options = {"OK", "Cancel"};
-                        int input = JOptionPane.showOptionDialog(null,
-                                """
-                                        This will delete all files in the target directory,
-                                        which are not present in the source directory.
-
-                                        If there are any files in the target directory which
-                                        should not be deleted, safe them somewhere else.
-
-                                        Are you sure you want to continue?
-                                        """, "Warning",
-                                JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                                null, options, options[0]);
-                        if (input == JOptionPane.YES_OPTION) {
-                            backUpApplication.updatedBackup();
-                        }
-                    }
+                    case UPDATING -> backUpApplication.updatedBackup();
                 }
                 return true;
             }
@@ -229,6 +238,7 @@ public class UI implements Observer {
                 if (!backupProgressSwingWorker.isCancelled()) {
                     JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
                             JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("backup finished.");
                 }
             }
         };

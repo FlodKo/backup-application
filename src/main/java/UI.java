@@ -224,7 +224,7 @@ public class UI implements Observer {
         backupProgressSwingWorker = new SwingWorker<>() {
             @Override
             protected Boolean doInBackground() {
-                System.out.print("starting backup in " + backupMode + " mode.");
+                System.out.println("starting backup in '" + backupMode + "' mode.");
                 switch (backupMode) {
                     case NEW -> backUpApplication.newBackup(newDirectoryName);
                     case CONSECUTIVE -> backUpApplication.consecutiveBackup();
@@ -236,9 +236,9 @@ public class UI implements Observer {
             @Override
             protected void done() {
                 if (!backupProgressSwingWorker.isCancelled()) {
+                    System.out.println("backup finished.");
                     JOptionPane.showMessageDialog(null, "The backup is done.", "Success",
                             JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("backup finished.");
                 }
             }
         };
@@ -257,8 +257,10 @@ public class UI implements Observer {
 
         JButton button;
         if (directoryType == DirectoryType.TARGET_EXTERNAL) {
-            Path imagePath = Paths.get("./src/resources/icon").toAbsolutePath();
-            ImageIcon usbStick = new ImageIcon(String.valueOf(imagePath));
+            //Path imagePath = Paths.get("../../../src/resources/USB vertical.png").toAbsolutePath(); // for compiler
+            Path imagePath = Paths.get("src/resources/USB vertical.png").toAbsolutePath();
+            System.out.println(imagePath);
+            ImageIcon usbStick = new ImageIcon((imagePath.toString()));
             button = new JButton(usbStick);
             button.setToolTipText("choose external directory");
         } else {
@@ -320,7 +322,7 @@ public class UI implements Observer {
     }
 
     /**
-     * check whether a target directory, a source directory and a backup mode is chosen.
+     * checks whether a target directory, a source directory and a backup mode is chosen.
      */
     public void checkIfBackupPossible() {
         startBackupButton.setEnabled(this.backupMode != BackupMode.NONE && backUpApplication.getSourceRootFile() != null

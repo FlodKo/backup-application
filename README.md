@@ -13,5 +13,7 @@ Backup Application in Java
   - die ganzen warnings in BackupApplication angucken (?)
   - executable bauen (?)
   - Testen (Alle)
-  - Tooltips schreiben -> fertig
+  - extern und internen Zielordner tauschen?
+  - in infobox übershcrift einfügen
+  - haken setzen für delete funktion
   - Windows Version schreiben? (?)

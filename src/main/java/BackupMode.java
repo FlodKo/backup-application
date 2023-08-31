@@ -1,5 +1,5 @@
 public enum BackupMode {
-    NONE("None"),
+    NONE("Choose a backup mode"),
     CONSECUTIVE("Consecutive"),
     NEW("New"),
     UPDATING("Updating");

@@ -5,7 +5,6 @@ Backup Application in Java
 
 - Schönheitssachen
   - neue GUI mit JavaFX?
-  - Tooltips schreiben
 
 - Programm fertig machen:
   - Allgemein Error handling (Flo)
@@ -14,4 +13,7 @@ Backup Application in Java
     - die ganzen warnings in BackupApplication angucken --> recheche welche davon relevant sind?
   - Executable bauen (Jules)
   - Testen (Alle)
+  - extern und internen Zielordner tauschen?
+  - in infobox übershcrift einfügen
+  - haken setzen für delete funktion
   - Windows Version schreiben? (?)

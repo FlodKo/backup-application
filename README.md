@@ -5,13 +5,13 @@ Backup Application in Java
 
 - Schönheitssachen
   - neue GUI mit JavaFX?
+  - Tooltips schreiben
 
 - Programm fertig machen:
-  - allgemein Error handling (Flo)
-    - Fehlerhafte Dateinamen handlen (Flo)
-    - Error-Meldungen anzeigen (Flo)
-  - die ganzen warnings in BackupApplication angucken (?)
-  - executable bauen (?)
+  - Allgemein Error handling (Flo)
+    - Fehlerhafte Dateinamen handlen (Flo) --> Alle invalid encodings fixen
+    - Error-Meldungen anzeigen (Flo) --> Mindestens try catch wrapper, vielleicht detailierter
+    - die ganzen warnings in BackupApplication angucken --> recheche welche davon relevant sind?
+  - Executable bauen (Jules)
   - Testen (Alle)
-  - Tooltips schreiben
   - Windows Version schreiben? (?)
